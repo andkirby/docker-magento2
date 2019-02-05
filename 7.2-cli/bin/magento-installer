@@ -1,5 +1,10 @@
 #!/bin/bash
 
+set -o pipefail
+set -o errexit
+set -o nounset
+#set -o xtrace
+
 [ "$DEBUG" = "true" ] && set -x
 
 AUTH_JSON_FILE="$(composer -g config data-dir 2>/dev/null)/auth.json"

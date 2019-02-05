@@ -1,5 +1,10 @@
 #!/bin/bash
 
+set -o pipefail
+set -o errexit
+set -o nounset
+#set -o xtrace
+
 [ "$DEBUG" = "true" ] && set -x
 
 # If asked, we'll ensure that the www-data is set to the same uid/gid as the
