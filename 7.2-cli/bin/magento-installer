@@ -66,7 +66,7 @@ if [ ! "$M2SETUP_INSTALL_DB" = "false" ]; then
         INSTALL_COMMAND="$INSTALL_COMMAND --backend-frontname=$M2SETUP_BACKEND_FRONTNAME"
     fi
 
-    if [ "$M2SETUP_USE_SAMPLE_DATA" = "true" ]; then
+    if [ "${M2SETUP_USE_SAMPLE_DATA:-}" = "true" ]; then
 
       $MAGENTO_COMMAND sampledata:deploy
       composer --working-dir=$MAGENTO_ROOT update
@@ -76,7 +76,7 @@ if [ ! "$M2SETUP_INSTALL_DB" = "false" ]; then
 
     $INSTALL_COMMAND
     $MAGENTO_COMMAND index:reindex
-    $MAGENTO_COMMAND setup:static-content:deploy
+    $MAGENTO_COMMAND setup:static-content:deploy --force
 
 else
     echo "Skipping DB installation"
@@ -92,7 +92,13 @@ echo "Fixing file permissions.."
 
 find $MAGENTO_ROOT/pub -type f -exec chmod 664 {} \;
 find $MAGENTO_ROOT/pub -type d -exec chmod 775 {} \;
-find $MAGENTO_ROOT/var/generation -type d -exec chmod g+s {} \;
+
+# backward compatible "generated" directory file/s permission update
+if [ -e $MAGENTO_ROOT/generated ]; then
+  find $MAGENTO_ROOT/generated -type d -exec chmod g+s {} \;
+else
+  find $MAGENTO_ROOT/var/generation -type d -exec chmod g+s {} \;
+fi
 
 chown -R www-data:www-data $MAGENTO_ROOT
 
