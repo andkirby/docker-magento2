@@ -82,7 +82,9 @@ services:
     - M2SETUP_ADMIN_USER=admin
     - M2SETUP_ADMIN_PASSWORD=password1
     - M2SETUP_VERSION=2.1.*
-    # - M2SETUP_USE_SAMPLE_DATA=true
+#    - M2SETUP_USE_SAMPLE_DATA=false
+    - M2SETUP_PROJECT_TYPE=community
+#    - M2SETUP_PROJECT_TYPE=enterprise
 
   cron:
     build:

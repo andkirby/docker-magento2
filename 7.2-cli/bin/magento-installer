@@ -22,7 +22,7 @@ if [ ! -f "$MAGENTO_ROOT/composer.json" ]; then
 
     composer create-project \
         --repository-url=https://repo.magento.com/ \
-        magento/project-community-edition=$M2SETUP_VERSION \
+        magento/project-${M2SETUP_PROJECT_TYPE:-community}-edition=$M2SETUP_VERSION \
         --no-interaction \
         $MAGENTO_ROOT
 
