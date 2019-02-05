@@ -6,11 +6,11 @@ services:
     build:
       context: varnish/
     environment:
-    - VIRTUAL_HOST=${M2SETUP_PROJECT}.cc
+    - VIRTUAL_HOST=${M2SETUP_VIRTUAL_HOST}
     - VIRTUAL_PORT=80
     - HTTPS_METHOD=redirect
     ports:
-    - '6815:80'
+    - '${M2SETUP_PORT_80}:80'
     links:
     - web
 
@@ -18,7 +18,7 @@ services:
     build:
       context: nginx/
     ports:
-    - '7178:443'
+    - '${M2SETUP_PORT_443}:443'
     - 80
     links:
     - fpm
@@ -26,11 +26,11 @@ services:
     volumes_from:
     - appdata
     env_file:
-    - ./global.env
-    #environment:
-    #- VIRTUAL_HOST=${M2SETUP_PROJECT}
-    #- VIRTUAL_PORT=80
-    #- HTTPS_METHOD=noredirect
+    - global.env
+    environment:
+    - VIRTUAL_HOST=${M2SETUP_PROJECT}
+    - VIRTUAL_PORT=80
+    - HTTPS_METHOD=redirect
 
   fpm:
     hostname: fpm.${M2SETUP_PROJECT}
@@ -43,7 +43,7 @@ services:
     volumes_from:
     - appdata
     env_file:
-    - ./global.env
+    - global.env
 
   db:
     image: mariadb:10
@@ -68,7 +68,7 @@ services:
     volumes_from:
     - appdata
     env_file:
-    - ./global.env
+    - global.env
     - ./composer.env
     environment:
     - M2SETUP_INSTALL_DB=true
@@ -76,8 +76,8 @@ services:
     - M2SETUP_DB_NAME=magento2
     - M2SETUP_DB_USER=magento2
     - M2SETUP_DB_PASSWORD=magento2
-    - M2SETUP_BASE_URL=http://${M2SETUP_PROJECT}.cc/
-    - M2SETUP_SECURE_BASE_URL=https://${M2SETUP_PROJECT}.cc/
+    - M2SETUP_BASE_URL=http://${M2SETUP_VIRTUAL_HOST}/
+    - M2SETUP_SECURE_BASE_URL=https://${M2SETUP_VIRTUAL_HOST}/
     - M2SETUP_BACKEND_FRONTNAME=admin
     - M2SETUP_ADMIN_FIRSTNAME=Admin
     - M2SETUP_ADMIN_LASTNAME=User
@@ -85,9 +85,8 @@ services:
     - M2SETUP_ADMIN_USER=admin
     - M2SETUP_ADMIN_PASSWORD=qweqwe1
     - M2SETUP_VERSION=2.3
+    #- M2SETUP_USE_SAMPLE_DATA=false
     - M2SETUP_PROJECT_TYPE=community
-  #    - M2SETUP_PROJECT_TYPE=enterprise
-  #    - M2SETUP_USE_SAMPLE_DATA=false
 
   cron:
     build:
