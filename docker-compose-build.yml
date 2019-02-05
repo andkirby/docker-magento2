@@ -4,85 +4,85 @@ services:
     build:
       context: varnish/
     environment:
-      - VIRTUAL_HOST=magento2.docker
-      - VIRTUAL_PORT=80
-      - HTTPS_METHOD=noredirect
+    - VIRTUAL_HOST=magento2.docker
+    - VIRTUAL_PORT=80
+    - HTTPS_METHOD=noredirect
     ports:
-      - 80
+    - 80
     links:
-      - web
+    - web
 
   web:
     build:
       context: nginx/
     ports:
-      - 80
+    - 80
     links:
-      - fpm
-      - db
+    - fpm
+    - db
     volumes_from:
-      - appdata
+    - appdata
     env_file:
-      - ./global.env
+    - ./global.env
     #environment:
-      #- VIRTUAL_HOST=magento2.docker
-      #- VIRTUAL_PORT=80
-      #- HTTPS_METHOD=noredirect
+    #- VIRTUAL_HOST=magento2.docker
+    #- VIRTUAL_PORT=80
+    #- HTTPS_METHOD=noredirect
 
   fpm:
     hostname: fpm.magento2.docker
     build:
       context: 7.0-fpm/
     ports:
-      - 9000
+    - 9000
     links:
-      - db
+    - db
     volumes_from:
-      - appdata
+    - appdata
     env_file:
-      - ./global.env
+    - ./global.env
 
   db:
     image: mariadb:10
     ports:
-      - 3306
+    - 3306
     volumes_from:
-      - dbdata
+    - dbdata
     environment:
-      - MYSQL_ROOT_PASSWORD=magento2
-      - MYSQL_DATABASE=magento2
-      - MYSQL_USER=magento2
-      - MYSQL_PASSWORD=magento2
+    - MYSQL_ROOT_PASSWORD=magento2
+    - MYSQL_DATABASE=magento2
+    - MYSQL_USER=magento2
+    - MYSQL_PASSWORD=magento2
 
   cli:
     hostname: cli.magento2.docker
     build:
       context: 7.0-cli/
     links:
-      - db
+    - db
     volumes:
-      - ~/.composer/cache:/root/.composer/cache
+    - ~/.composer/cache:/root/.composer/cache
     volumes_from:
-      - appdata
+    - appdata
     env_file:
-      - ./global.env
-      - ./composer.env
+    - ./global.env
+    - ./composer.env
     environment:
-      - M2SETUP_INSTALL_DB=true
-      - M2SETUP_DB_HOST=db
-      - M2SETUP_DB_NAME=magento2
-      - M2SETUP_DB_USER=magento2
-      - M2SETUP_DB_PASSWORD=magento2
-      - M2SETUP_BASE_URL=http://magento2.docker/
-      # - M2SETUP_SECURE_BASE_URL=https://magento2.docker/
-      - M2SETUP_BACKEND_FRONTNAME=admin
-      - M2SETUP_ADMIN_FIRSTNAME=Admin
-      - M2SETUP_ADMIN_LASTNAME=User
-      - M2SETUP_ADMIN_EMAIL=dummy@gmail.com
-      - M2SETUP_ADMIN_USER=admin
-      - M2SETUP_ADMIN_PASSWORD=password1
-      - M2SETUP_VERSION=2.1.*
-      # - M2SETUP_USE_SAMPLE_DATA=true
+    - M2SETUP_INSTALL_DB=true
+    - M2SETUP_DB_HOST=db
+    - M2SETUP_DB_NAME=magento2
+    - M2SETUP_DB_USER=magento2
+    - M2SETUP_DB_PASSWORD=magento2
+    - M2SETUP_BASE_URL=http://magento2.docker/
+    # - M2SETUP_SECURE_BASE_URL=https://magento2.docker/
+    - M2SETUP_BACKEND_FRONTNAME=admin
+    - M2SETUP_ADMIN_FIRSTNAME=Admin
+    - M2SETUP_ADMIN_LASTNAME=User
+    - M2SETUP_ADMIN_EMAIL=dummy@gmail.com
+    - M2SETUP_ADMIN_USER=admin
+    - M2SETUP_ADMIN_PASSWORD=password1
+    - M2SETUP_VERSION=2.1.*
+    # - M2SETUP_USE_SAMPLE_DATA=true
 
   cron:
     build:
@@ -90,18 +90,18 @@ services:
     hostname: magento2-cron.docker
     command: run-cron
     environment:
-      - ENABLE_SENDMAIL=true
+    - ENABLE_SENDMAIL=true
     volumes_from:
-      - appdata
+    - appdata
     links:
-      - db
+    - db
 
   appdata:
     image: tianon/true
     volumes:
-      - ./magento:/var/www/magento
+    - ./magento:/var/www/magento
 
   dbdata:
     image: tianon/true
     volumes:
-      - /var/lib/mysql
+    - /var/lib/mysql
