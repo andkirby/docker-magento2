@@ -37,7 +37,7 @@ services:
     build:
       context: 7.2-fpm/
     ports:
-    - 9000
+    - '${M2SETUP_PORT_9000}:9000'
     links:
     - db
     volumes_from:
@@ -48,7 +48,7 @@ services:
   db:
     image: mariadb:10
     ports:
-    - 3306
+    - '${M2SETUP_PORT_3306}:3306'
     volumes_from:
     - dbdata
     environment:
