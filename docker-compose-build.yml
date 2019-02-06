@@ -3,6 +3,7 @@
 version: "2"
 services:
   varnish:
+    container_name: varnish.${M2SETUP_PROJECT}
     build:
       context: varnish/
     environment:
@@ -15,6 +16,7 @@ services:
     - web
 
   web:
+    container_name: web.${M2SETUP_PROJECT}
     build:
       context: nginx/
     ports:
@@ -33,6 +35,7 @@ services:
     - HTTPS_METHOD=redirect
 
   fpm:
+    container_name: fpm.${M2SETUP_PROJECT}
     hostname: fpm.${M2SETUP_PROJECT}
     build:
       context: 7.2-fpm/
@@ -46,6 +49,7 @@ services:
     - global.env
 
   db:
+    container_name: db.${M2SETUP_PROJECT}
     image: mariadb:10
     ports:
     - '${M2SETUP_PORT_3306}:3306'
@@ -59,6 +63,7 @@ services:
 
   cli:
     hostname: cli.${M2SETUP_PROJECT}
+    container_name: cli.${M2SETUP_PROJECT}
     build:
       context: 7.2-cli/
     links:
@@ -89,6 +94,7 @@ services:
     - M2SETUP_PROJECT_TYPE=community
 
   cron:
+    container_name: cron.${M2SETUP_PROJECT}
     build:
       context: 7.2-cli/
     hostname: cron.${M2SETUP_PROJECT}
