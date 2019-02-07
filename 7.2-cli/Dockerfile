@@ -6,8 +6,29 @@ FROM php:7.2-cli
 
 MAINTAINER Nick Jones <nick@nicksays.co.uk>
 
-# Install dependencies
-RUN apt-get update \
+ADD . /container-files
+
+RUN true \
+  && cp /container-files/etc/php-cli.ini    /usr/local/etc/php/conf.d/zz-magento.ini \
+  && cp /container-files/etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini \
+  && cp /container-files/etc/mail.ini       /usr/local/etc/php/conf.d/zz-mail.ini \
+  && cp /container-files/docker-entrypoint.sh /docker-entrypoint.sh \
+
+  # set up binaries
+  && cp /container-files/bin/* /usr/local/bin/ \
+  && chmod +x \
+    /usr/local/bin/magento-installer \
+    /usr/local/bin/magento-command \
+    /usr/local/bin/magerun2 \
+    /usr/local/bin/run-cron \
+
+  # remove copied files
+  && rm -rf /container-files \
+
+  && chmod +x /docker-entrypoint.sh \
+
+  # Install dependencies
+  && apt-get update \
   && apt-get install -y \
     libfreetype6-dev \ 
     libicu-dev \ 
@@ -23,11 +44,11 @@ RUN apt-get update \
     mysql-client \ 
     git \
 
-# Configure the gd library
+  # Configure the gd library
   && docker-php-ext-configure \
   gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
 
-# Install required PHP extensions
+  # Install required PHP extensions
   && docker-php-ext-install \
   dom \ 
   gd \ 
@@ -40,41 +61,16 @@ RUN apt-get update \
   bcmath \
 
   # Install Xdebug (but don't enable)
-  && pecl install -o -f xdebug
+  && pecl install -o -f xdebug \
+  && docker-php-ext-enable xdebug.so \
+  && curl -Ls https://raw.github.com/rikby/xdebug-switcher/master/download | bash \
+  && xd_swi off \
 
-ENV PHP_MEMORY_LIMIT 2G
-ENV PHP_ENABLE_XDEBUG false
-ENV MAGENTO_ROOT /var/www/magento
-
-ENV DEBUG false
-ENV UPDATE_UID_GID false
-
-ADD etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini
-ADD etc/mail.ini /usr/local/etc/php/conf.d/zz-mail.ini
-
-ADD docker-entrypoint.sh /docker-entrypoint.sh
-
-RUN ["chmod", "+x", "/docker-entrypoint.sh"]
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
-
-ENV COMPOSER_ALLOW_SUPERUSER 1
-ENV COMPOSER_GITHUB_TOKEN ""
-ENV COMPOSER_MAGENTO_USERNAME ""
-ENV COMPOSER_MAGENTO_PASSWORD ""
-ENV COMPOSER_BITBUCKET_KEY ""
-ENV COMPOSER_BITBUCKET_SECRET ""
-
-VOLUME /root/.composer/cache
-
-ADD etc/php-cli.ini /usr/local/etc/php/conf.d/zz-magento.ini
-
-# Get composer installed to /usr/local/bin/composer
-RUN true \
   # set up bash aliases and PS1 view
   && curl -Ls bit.ly/bash-init | bash \
   && curl -Ls bit.ly/bash-ps1 | bash \
 
+  # Get composer installed to /usr/local/bin/composer
   # composer installation
   && curl -sS https://getcomposer.org/installer \
     | php -- --install-dir=/usr/local/bin --filename=composer \
@@ -89,12 +85,21 @@ RUN true \
   && curl -L https://github.com/punkstar/mageconfigsync/releases/download/0.5.0-beta.1/mageconfigsync-0.5.0-beta.1.phar > mageconfigsync.phar \
   && chmod +x ./mageconfigsync.phar && mv ./mageconfigsync.phar /usr/local/bin
 
-ADD bin/* /usr/local/bin/
+# ENV PHP_MEMORY_LIMIT -1
+# ENV PHP_ENABLE_XDEBUG false
+ENV MAGENTO_ROOT /var/www/magento
+# ENV DEBUG false
+# ENV UPDATE_UID_GID false
 
-RUN chmod +x \
-  /usr/local/bin/magento-installer \
-  /usr/local/bin/magento-command \
-  /usr/local/bin/magerun2 \
-  /usr/local/bin/run-cron
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+ENV COMPOSER_ALLOW_SUPERUSER 1
+#ENV COMPOSER_GITHUB_TOKEN ""
+#ENV COMPOSER_MAGENTO_USERNAME ""
+#ENV COMPOSER_MAGENTO_PASSWORD ""
+#ENV COMPOSER_BITBUCKET_KEY ""
+#ENV COMPOSER_BITBUCKET_SECRET ""
+
+VOLUME /root/.composer/cache
 
 CMD ["bash"]

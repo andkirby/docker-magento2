@@ -1,11 +1,16 @@
 #!/bin/bash
 
-[ "$DEBUG" = "true" ] && set -x
+set -o pipefail
+set -o errexit
+set -o nounset
+#set -o xtrace
+
+[ "${DEBUG:-}" = "true" ] && set -x
 
 # If asked, we'll ensure that the www-data is set to the same uid/gid as the
 # mounted volume.  This works around permission issues with virtualbox shared
 # folders.
-if [[ "$UPDATE_UID_GID" = "true" ]]; then
+if [[ "${UPDATE_UID_GID:-}" = "true" ]]; then
     echo "Updating www-data uid and gid"
 
     DOCKER_UID=`stat -c "%u" $MAGENTO_ROOT`
@@ -20,10 +25,10 @@ if [[ "$UPDATE_UID_GID" = "true" ]]; then
     # Once we've established the ids and incumbent ids then we need to free them
     # up (if necessary) and then make the change to www-data.
 
-    [ ! -z "${INCUMBENT_USER}" ] && usermod -u 99$DOCKER_UID $INCUMBENT_USER
+    [ -n "${INCUMBENT_USER:-}" ] && usermod -u 99$DOCKER_UID $INCUMBENT_USER
     usermod -u $DOCKER_UID www-data
 
-    [ ! -z "${INCUMBENT_GROUP}" ] && groupmod -g 99$DOCKER_GID $INCUMBENT_GROUP
+    [ -n "${INCUMBENT_GROUP:-}" ] && groupmod -g 99$DOCKER_GID $INCUMBENT_GROUP
     groupmod -g $DOCKER_GID www-data
 fi
 
@@ -31,23 +36,27 @@ fi
 mkdir -p $MAGENTO_ROOT
 chown www-data:www-data $MAGENTO_ROOT
 
-
-
 # Configure Sendmail if required
-if [ "$ENABLE_SENDMAIL" == "true" ]; then
+if [ "${ENABLE_SENDMAIL:-}" == "true" ]; then
     /etc/init.d/sendmail start
 fi
 
 # Substitute in php.ini values
-[ ! -z "${PHP_MEMORY_LIMIT}" ] && sed -i "s/!PHP_MEMORY_LIMIT!/${PHP_MEMORY_LIMIT}/" /usr/local/etc/php/conf.d/zz-magento.ini
-[ ! -z "${UPLOAD_MAX_FILESIZE}" ] && sed -i "s/!UPLOAD_MAX_FILESIZE!/${UPLOAD_MAX_FILESIZE}/" /usr/local/etc/php/conf.d/zz-magento.ini
+[ -n "${PHP_MEMORY_LIMIT:-}" ] \
+  && sed -i "s/memory_limit ?=.*/memory_limit = ${PHP_MEMORY_LIMIT}/" \
+        /usr/local/etc/php/conf.d/zz-magento.ini
 
-[ "$PHP_ENABLE_XDEBUG" = "true" ] && xd_swi on || xd_swi off
+[ -n "${PHP_UPLOAD_MAX_FILESIZE:-}" ] \
+  && sed -i "s/upload_max_filesize ?=.*/upload_max_filesize = ${PHP_UPLOAD_MAX_FILESIZE}/" \
+        /usr/local/etc/php/conf.d/zz-magento.ini
 
+# Enable Xdebug
+[ "${PHP_ENABLE_XDEBUG:-}" = "true" ] && xd_swi on || xd_swi off
 
 # Configure PHP-FPM
-[ ! -z "${MAGENTO_RUN_MODE}" ] && sed -i "s/!MAGENTO_RUN_MODE!/${MAGENTO_RUN_MODE}/" /usr/local/etc/php-fpm.conf
-
+[ -n "${MAGENTO_RUN_MODE:-}" ] \
+  && sed -i "s/env[MAGE_MODE] ?=.*/env[MAGE_MODE] = ${MAGENTO_RUN_MODE}/" \
+        /usr/local/etc/php-fpm.conf
 
 exec "$@"
 

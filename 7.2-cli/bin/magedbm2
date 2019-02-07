@@ -5,6 +5,6 @@ set -o errexit
 set -o nounset
 #set -o xtrace
 
-[ "$DEBUG" = "true" ] && set -x
+[ "${DEBUG:-}" = "true" ] && set -x
 
 exec sudo -u www-data -- magedbm2.phar --root-dir=$MAGENTO_ROOT "$@"
