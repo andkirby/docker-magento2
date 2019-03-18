@@ -1,9 +1,12 @@
 host_port() {
-  local domain=${1} port=${2} forward_type=${3:-port}
+  local domain=${1} port=${2} forward_type=${3:-port} standard_port=${4:-0}}
 
   hash=$(echo -n ${domain} | openssl dgst -sha1 | sed 's/^.* //')
 
-  if [ "${forward_type}" == 'port' ]; then
+  if [ "${standard_port:-}" == '1' ]; then
+    # ignore generating port number, just return the same port
+    echo ${port}
+  elif [[ "${forward_type}" == 'port' ]]; then
     base_port=$(( 1024 + 0x${hash:0:3} + 0x${hash:3:3} + 0x${hash:2:2} ))
     echo $(( ${base_port} + ${port} ))
   else
@@ -35,11 +38,11 @@ export M2SETUP_PHP=${M2SETUP_PHP}
 
 # Generate environment variable for ports
 # for "Host > VM > Docker" communications within different projects
-export M2SETUP_PORT_22=$(host_port ${M2SETUP_VIRTUAL_HOST} 22 ${vagrant_forward_type})
-export M2SETUP_PORT_80=$(host_port ${M2SETUP_VIRTUAL_HOST} 80 ${vagrant_forward_type})
-export M2SETUP_PORT_443=$(host_port ${M2SETUP_VIRTUAL_HOST} 443 ${vagrant_forward_type})
-export M2SETUP_PORT_3306=$(host_port ${M2SETUP_VIRTUAL_HOST} 3306 ${vagrant_forward_type})
-export M2SETUP_PORT_9000=$(host_port ${M2SETUP_VIRTUAL_HOST} 9000 ${vagrant_forward_type})
+export M2SETUP_PORT_22=$(host_port ${M2SETUP_VIRTUAL_HOST} 22 ${vagrant_forward_type} ${DOCKER_STANDARD_PORTS:-0})
+export M2SETUP_PORT_80=$(host_port ${M2SETUP_VIRTUAL_HOST} 80 ${vagrant_forward_type} ${DOCKER_STANDARD_PORTS:-0})
+export M2SETUP_PORT_443=$(host_port ${M2SETUP_VIRTUAL_HOST} 443 ${vagrant_forward_type} ${DOCKER_STANDARD_PORTS:-0})
+export M2SETUP_PORT_3306=$(host_port ${M2SETUP_VIRTUAL_HOST} 3306 ${vagrant_forward_type} ${DOCKER_STANDARD_PORTS:-0})
+export M2SETUP_PORT_9000=$(host_port ${M2SETUP_VIRTUAL_HOST} 9000 ${vagrant_forward_type} ${DOCKER_STANDARD_PORTS:-0})
 
 dev_file_option=''
 if [ -f ${__dir}/../docker-compose.dev.yml ]; then
