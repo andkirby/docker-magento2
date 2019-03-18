@@ -16,9 +16,11 @@ RUN true \
 
   # set up binaries
   && cp /container-files/bin/* /usr/local/bin/ \
+  && cp /usr/local/bin/magento-command /usr/local/bin/magento \
   && chmod +x \
     /usr/local/bin/magento-installer \
     /usr/local/bin/magento-command \
+    /usr/local/bin/magento \
     /usr/local/bin/magerun2 \
     /usr/local/bin/run-cron \
 
