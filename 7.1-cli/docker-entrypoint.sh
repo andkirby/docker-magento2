@@ -71,6 +71,13 @@ fi
 [ ! -z "${COMPOSER_BITBUCKET_KEY}" ] && [ ! -z "${COMPOSER_BITBUCKET_SECRET}" ] && \
     composer config --global bitbucket-oauth.bitbucket.org $COMPOSER_BITBUCKET_KEY $COMPOSER_BITBUCKET_SECRET
 
+[ -n "${COMPOSER_PRIVATE_USERNAME:-}" ] && \
+  [ -n "${COMPOSER_PRIVATE_PASSWORD:-}" ] && \
+  [ -n "${COMPOSER_PRIVATE_URL:-}" ] && \
+    composer config --global repositories.${COMPOSER_PRIVATE_URL} composer \
+      ${COMPOSER_PRIVATE_USERNAME} ${COMPOSER_PRIVATE_PASSWORD}
+
+
 
 exec "$@"
 
