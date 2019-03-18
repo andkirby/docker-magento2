@@ -24,7 +24,7 @@ vagrant_forward_type='port'
 [ -n "${M2SETUP_PROJECT}" ] && export M2SETUP_PROJECT=${M2SETUP_PROJECT} \
   || export M2SETUP_PROJECT=${M2SETUP_PROJECT:-$(echo ${__dir} | sed -r 's|.*/([^/]+)/bin$|\1|')}
 
-[ -n "${M2SETUP_VIRTUAL_HOST}" ] && export M2SETUP_VIRTUAL_HOST=${M2SETUP_VIRTUAL_HOST} \
+[ -n "${M2SETUP_VIRTUAL_HOST:-}" ] && export M2SETUP_VIRTUAL_HOST=${M2SETUP_VIRTUAL_HOST} \
   || export M2SETUP_VIRTUAL_HOST=${M2SETUP_PROJECT}.cc
 
 # PHP version
