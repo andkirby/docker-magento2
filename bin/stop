@@ -9,4 +9,4 @@ __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
 readonly __dir __file
 
-bash ${__dir}/docker-compose-local-varnish stop
+bash ${__dir}/docker-compose stop ${@}
