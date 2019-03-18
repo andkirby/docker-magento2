@@ -4,6 +4,8 @@ set -o errexit
 set -o nounset
 #set -o xtrace
 
+# Install starting containers as system service in CentOS (or any systemctl compatible)
+
 # Set magic variables for current file & dir
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
@@ -17,7 +19,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=${__dir}/docker-compose-local-varnish up
+ExecStart=${__dir}/docker-compose up
 TimeoutStartSec=1
 
 [Install]
