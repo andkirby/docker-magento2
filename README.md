@@ -9,6 +9,39 @@ A collection of Docker images for running Magento 2 through nginx and on the com
 
 ## Quick Start
 
+(---------Kirby's modification---------)
+
+### 1. Prepare your ENV files
+```
+cp composer.env.sample composer.env
+cp global.env.sample global.env
+```
+And update these new `global.env` and `composer.env`.
+
+### 2. Build/prepare images
+```shell
+bash bin/build
+```
+
+### 3. Dump your own static `docker-compose.yml` file
+This file will use created images directly.
+```shell
+bash bin/docker-compose-images-config-dump
+```
+To have an ability to build image from directories please use this command instead:
+```shell
+bash bin/docker-compose-config-dump
+```
+
+### 4. Wake up
+```shell
+docker-compose up -d
+docker-compose restart
+```
+
+(---------End Of Kirby's modification---------)
+
+
     cp composer.env.sample composer.env
     # ..put the correct tokens into composer.env
 
