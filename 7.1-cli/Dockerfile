@@ -61,7 +61,7 @@ RUN true \
   zip \ 
   soap \ 
   bcmath \
-  mcrypt
+  mcrypt \
 
   # Install Xdebug (but don't enable)
   && pecl install -o -f xdebug \
