@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -o pipefail
+set -o errexit
+set -o nounset
+#set -o xtrace
+
+# Set magic variables for current file & dir
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+__file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+readonly __dir __file
+
+echo "Dumping Docker-Compose YAML config from docker-compose-build.yml into docker-compose.yml."
+
+# rename exist docker-compose.yml into *.bak
+[ -f ${__dir}/../docker-compose.yml ] \
+  && mv ${__dir}/../docker-compose.yml ${__dir}/../docker-compose.yml.bak \
+  && echo "File ${__dir}/../docker-compose.yml already exist. Back up it into *.bak."
+
+bash ${__dir}/docker-compose-images config > ${__dir}/../docker-compose.yml

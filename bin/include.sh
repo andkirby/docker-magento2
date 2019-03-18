@@ -27,6 +27,9 @@ vagrant_forward_type='port'
 [ -n "${M2SETUP_VIRTUAL_HOST:-}" ] && export M2SETUP_VIRTUAL_HOST=${M2SETUP_VIRTUAL_HOST} \
   || export M2SETUP_VIRTUAL_HOST=${M2SETUP_PROJECT}.cc
 
+# generate docker image pefix (Docker does this automatically)
+DOCKER_IMAGE_PREFIX=$(echo ${__dir} | sed -r 's|.*/([^/]+)/bin$|\1|' | tr -d '.-')
+
 # PHP version
 export M2SETUP_PHP=${M2SETUP_PHP}
 
