@@ -25,28 +25,16 @@ if [[ "${UPDATE_UID_GID:-}" = "true" ]]; then
     # Once we've established the ids and incumbent ids then we need to free them
     # up (if necessary) and then make the change to www-data.
 
-    [ -n "${INCUMBENT_USER}" ] && usermod -u 99$DOCKER_UID $INCUMBENT_USER
+    [ -n "${INCUMBENT_USER:-}" ] && usermod -u 99$DOCKER_UID $INCUMBENT_USER
     usermod -u $DOCKER_UID www-data
 
-    [ -n "${INCUMBENT_GROUP}" ] && groupmod -g 99$DOCKER_GID $INCUMBENT_GROUP
+    [ -n "${INCUMBENT_GROUP:-}" ] && groupmod -g 99$DOCKER_GID $INCUMBENT_GROUP
     groupmod -g $DOCKER_GID www-data
 fi
 
 # Ensure our Magento directory exists
 mkdir -p $MAGENTO_ROOT
 chown www-data:www-data $MAGENTO_ROOT
-
-CRON_LOG=/var/log/cron.log
-
-# Setup Magento cron
-echo "* * * * * www-data /usr/local/bin/php ${MAGENTO_ROOT}/bin/magento cron:run | grep -v \"Ran jobs by schedule\" >> ${MAGENTO_ROOT}/var/log/magento.cron.log" > /etc/cron.d/magento
-echo "* * * * * www-data /usr/local/bin/php ${MAGENTO_ROOT}/update/cron.php >> ${MAGENTO_ROOT}/var/log/update.cron.log" >> /etc/cron.d/magento
-echo "* * * * * www-data /usr/local/bin/php ${MAGENTO_ROOT}/bin/magento setup:cron:run >> ${MAGENTO_ROOT}/var/log/setup.cron.log" >> /etc/cron.d/magento
-
-# Get rsyslog running for cron output
-touch $CRON_LOG
-echo "cron.* $CRON_LOG" > /etc/rsyslog.d/cron.conf
-service rsyslog start
 
 # Configure Sendmail if required
 if [ "${ENABLE_SENDMAIL:-}" == "true" ]; then
@@ -65,23 +53,10 @@ fi
 # Enable Xdebug
 [ "${PHP_ENABLE_XDEBUG:-}" = "true" ] && xd_swi on || xd_swi off
 
-# Configure composer
-[ -n "${COMPOSER_GITHUB_TOKEN:-}" ] && \
-  composer config --global github-oauth.github.com ${COMPOSER_GITHUB_TOKEN}
-
-[ -n "${COMPOSER_MAGENTO_USERNAME:-}" ] && \
-  composer config --global http-basic.repo.magento.com \
-    ${COMPOSER_MAGENTO_USERNAME} ${COMPOSER_MAGENTO_PASSWORD}
-
-[ -n "${COMPOSER_BITBUCKET_KEY:-}" ] && [ -n "${COMPOSER_BITBUCKET_SECRET:-}" ] && \
-  composer config --global bitbucket-oauth.bitbucket.org \
-    ${COMPOSER_BITBUCKET_KEY} ${COMPOSER_BITBUCKET_SECRET}
-
-[ -n "${COMPOSER_PRIVATE_USERNAME:-}" ] && \
-  [ -n "${COMPOSER_PRIVATE_PASSWORD:-}" ] && \
-  [ -n "${COMPOSER_PRIVATE_URL:-}" ] && \
-    composer config --global repositories.${COMPOSER_PRIVATE_URL} composer \
-      ${COMPOSER_PRIVATE_USERNAME} ${COMPOSER_PRIVATE_PASSWORD}
+# Configure PHP-FPM
+[ -n "${MAGENTO_RUN_MODE:-}" ] \
+  && sed -i "s/env[MAGE_MODE] ?=.*/env[MAGE_MODE] = ${MAGENTO_RUN_MODE}/" \
+        /usr/local/etc/php-fpm.conf
 
 exec "$@"
 
