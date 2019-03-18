@@ -19,6 +19,7 @@ vagrant_forward_type='port'
 
 export M2SETUP_PROJECT=${M2SETUP_PROJECT:-$(echo ${__dir} | sed -r 's|.*/([^/]+)/bin$|\1|')}
 export M2SETUP_VIRTUAL_HOST=${M2SETUP_PROJECT}.cc
+export M2SETUP_PHP=7.1
 
 # Generate environment variable for ports
 # for "Host > VM > Docker" communications within different projects

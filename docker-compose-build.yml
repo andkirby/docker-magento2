@@ -38,7 +38,7 @@ services:
     container_name: fpm.${M2SETUP_PROJECT}
     hostname: fpm.${M2SETUP_PROJECT}
     build:
-      context: 7.2-fpm/
+      context: ${M2SETUP_PHP}-fpm/
     ports:
     - '${M2SETUP_PORT_9000}:9000'
     links:
@@ -65,7 +65,7 @@ services:
     hostname: cli.${M2SETUP_PROJECT}
     container_name: cli.${M2SETUP_PROJECT}
     build:
-      context: 7.2-cli/
+      context: ${M2SETUP_PHP}-cli/
     links:
     - db
     volumes:
@@ -96,7 +96,7 @@ services:
   cron:
     container_name: cron.${M2SETUP_PROJECT}
     build:
-      context: 7.2-cli/
+      context: ${M2SETUP_PHP}-cli/
     hostname: cron.${M2SETUP_PROJECT}
     command: run-cron
     environment:
