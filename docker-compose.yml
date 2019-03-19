@@ -1,3 +1,11 @@
+# This originally designed file which uses external images.
+# You may generate your own ones.
+# Try to build them:
+#   $ bash bin/build
+# and generate your complete docker-compose.yml file:
+#   $ bin/docker-compose-images-config-dump
+# Now you are ready to run:
+
 version: "2"
 services:
   varnish:
@@ -86,7 +94,7 @@ services:
     hostname: magento2-cron.docker
     command: run-cron
     env_file:
-      - ./global.env    
+      - ./global.env
     environment:
       - ENABLE_SENDMAIL=true
     volumes_from:

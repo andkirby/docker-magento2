@@ -73,7 +73,7 @@ services:
     volumes_from:
     - appdata
     env_file:
-    - global.env
+    - ./global.env
     - ./composer.env
     environment:
     - M2SETUP_INSTALL_DB=true
