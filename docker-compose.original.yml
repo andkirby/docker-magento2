@@ -101,8 +101,6 @@ services:
       - appdata
     links:
       - db
-    env_file:
-      - ./global.env      
 
   appdata:
     image: tianon/true
