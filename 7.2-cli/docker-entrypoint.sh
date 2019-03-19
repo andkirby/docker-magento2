@@ -80,7 +80,8 @@ fi
 [ -n "${COMPOSER_PRIVATE_USERNAME:-}" ] && \
   [ -n "${COMPOSER_PRIVATE_PASSWORD:-}" ] && \
   [ -n "${COMPOSER_PRIVATE_URL:-}" ] && \
-    composer config --global repositories.${COMPOSER_PRIVATE_URL} composer \
+    composer config --global repositories.private composer ${COMPOSER_PRIVATE_URL} && \
+    composer config --global http-basic.$(echo ${COMPOSER_PRIVATE_URL} | sed -r 's#(^https?://)([^/]+)(.*)#\2#g') \
       ${COMPOSER_PRIVATE_USERNAME} ${COMPOSER_PRIVATE_PASSWORD}
 
 exec "$@"
