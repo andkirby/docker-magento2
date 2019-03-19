@@ -9,6 +9,13 @@ __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
 readonly __dir __file
 
+##
+# Convert to relative path
+#
+relative_path() {
+  python -c "import os,sys;print(os.path.relpath(*(sys.argv[1:])))" "${@}"
+}
+
 echo "Dumping Docker-Compose YAML config from $(relative_path ${__dir}/../docker-compose-build.yml) into $(relative_path ${__dir}/../docker-compose.yml)."
 
 # rename exist docker-compose.yml into *.bak
