@@ -12,28 +12,38 @@ A collection of Docker images for running Magento 2 through nginx and on the com
 (---------Kirby's modification---------)
 
 ### 1. Prepare your ENV files
-```
+
+```shell
 cp composer.env.sample composer.env
 cp global.env.sample global.env
 ```
-And update these new `global.env` and `composer.env`.
+And update these newly copied files.
 
 ### 2. Build/prepare images
+
 ```shell
 bash bin/build
 ```
 
 ### 3. Dump your own static `docker-compose.yml` file
+
 This file will use created images directly.
 ```shell
 bash bin/docker-compose-images-config-dump
 ```
-To have an ability to build image from directories please use this command instead:
+Or, to have an ability to build image from directories please use this command instead:
 ```shell
 bash bin/docker-compose-config-dump
 ```
 
-### 4. Wake up
+### 4. Install
+
+```shell
+docker-compose run cli magento-installer
+```
+
+### 5. Wake up
+
 ```shell
 docker-compose up -d
 docker-compose restart
@@ -74,7 +84,7 @@ A sample `docker-compose.yml` is provided in this repository.
 
 A number of commands are baked into the image and are available on the `$PATH`. These are:
 
-* `magento-command` - Provides a user-safe wrapper around the `bin/magento` command.
+* `magento-command` (or just `magento`) - Provides a user-safe wrapper around the `bin/magento` command.
 * `magento-installer` - Installs and configures Magento into the directory defined in the `$MAGENTO_ROOT` environment variable.
 * `magento-extension-installer` - Installs a Magento 2 extension from the `/extensions/<name>` directory, using symlinks.
 * `magerun2` - A user-safe wrapper for `n98-magerun2.phar`, which provides a wider range of useful commands. [Learn more here](https://github.com/netz98/n98-magerun2)
