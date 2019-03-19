@@ -1,6 +1,11 @@
 #!/bin/bash
 
-[ "$DEBUG" = "true" ] && set -x
+set -o pipefail
+set -o errexit
+set -o nounset
+#set -o xtrace
+
+[ "${DEBUG:-}" = "true" ] && set -x
 
 AUTH_JSON_FILE="$(composer -g config data-dir 2>/dev/null)/auth.json"
 
@@ -17,7 +22,7 @@ if [ ! -f "$MAGENTO_ROOT/composer.json" ]; then
 
     composer create-project \
         --repository-url=https://repo.magento.com/ \
-        magento/project-community-edition=$M2SETUP_VERSION \
+        magento/project-${M2SETUP_PROJECT_TYPE:-community}-edition=$M2SETUP_VERSION \
         --no-interaction \
         $MAGENTO_ROOT
 
@@ -61,7 +66,7 @@ if [ ! "$M2SETUP_INSTALL_DB" = "false" ]; then
         INSTALL_COMMAND="$INSTALL_COMMAND --backend-frontname=$M2SETUP_BACKEND_FRONTNAME"
     fi
 
-    if [ "$M2SETUP_USE_SAMPLE_DATA" = "true" ]; then
+    if [ "${M2SETUP_USE_SAMPLE_DATA:-}" = "true" ]; then
 
       $MAGENTO_COMMAND sampledata:deploy
       composer --working-dir=$MAGENTO_ROOT update
@@ -87,7 +92,13 @@ echo "Fixing file permissions.."
 
 find $MAGENTO_ROOT/pub -type f -exec chmod 664 {} \;
 find $MAGENTO_ROOT/pub -type d -exec chmod 775 {} \;
-find $MAGENTO_ROOT/var/generation -type d -exec chmod g+s {} \;
+
+# backward compatible "generated" directory file/s permission update
+if [ -e $MAGENTO_ROOT/generated ]; then
+  find $MAGENTO_ROOT/generated -type d -exec chmod g+s {} \;
+else
+  find $MAGENTO_ROOT/var/generation -type d -exec chmod g+s {} \;
+fi
 
 chown -R www-data:www-data $MAGENTO_ROOT
 
