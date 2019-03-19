@@ -1,3 +1,6 @@
+##
+# Generate a port number based upon a domain name
+#
 host_port() {
   local domain=${1} port=${2} forward_type=${3:-port} standard_port=${4:-0}}
 
