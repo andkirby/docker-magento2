@@ -39,8 +39,9 @@ bash bin/docker-compose-config-dump
 ### 4. Install
 
 ```shell
-docker-compose run cli magento-installer
+docker-compose run --rm cli magento-installer
 ```
+NOTE: Please set `--rm` to remove a created container after run. 
 
 ### 5. Wake up
 
