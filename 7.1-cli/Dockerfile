@@ -45,6 +45,7 @@ RUN true \
     rsyslog \ 
     mysql-client \ 
     git \
+    unzip \
 
   # Configure the gd library
   && docker-php-ext-configure \
