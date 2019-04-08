@@ -33,12 +33,16 @@ services:
     - VIRTUAL_HOST=${M2SETUP_PROJECT}
     - VIRTUAL_PORT=80
     - HTTPS_METHOD=redirect
+    expose:
+      - 80
 
   fpm:
     container_name: fpm.${M2SETUP_PROJECT}
     hostname: fpm.${M2SETUP_PROJECT}
     build:
       context: ${M2SETUP_PHP}-fpm/
+    expose:
+      - 9000
     ports:
     - '${M2SETUP_PORT_9000}:9000'
     links:
