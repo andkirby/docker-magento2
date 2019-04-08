@@ -84,5 +84,5 @@ fi
     composer config --global http-basic.$(echo ${COMPOSER_PRIVATE_URL} | sed -r 's#(^https?://)([^/]+)(.*)#\2#g') \
       ${COMPOSER_PRIVATE_USERNAME} ${COMPOSER_PRIVATE_PASSWORD}
 
-exec "$@"
+${@}
 
