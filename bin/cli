@@ -9,6 +9,8 @@ __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
 readonly __dir __file
 
+. ${__dir}/include.sh
+
 docker-compose \
   --file ${__dir}/../docker-compose.yml ${dev_file_option} \
   run --rm --name cli.docker cli ${@:-bash}
