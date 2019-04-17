@@ -73,6 +73,9 @@ RUN true \
   # set up bash aliases and PS1 view
   && curl -Ls bit.ly/bash-init | bash \
   && curl -Ls bit.ly/bash-ps1 | bash \
+  && echo '# get to docroot directory' >> ~/.bashrc \
+  && echo '[ "${set_path_load:-0}" != 1 ] && [ ${PWD} != /var/www/magento ] && cd /var/www/magento && export set_path_load=1' >> ~/.bashrc \
+  && echo >> ~/.bashrc \
 
   # Get composer installed to /usr/local/bin/composer
   # composer installation
