@@ -13,8 +13,12 @@ set -o nounset
 if [[ "${UPDATE_UID_GID:-}" = "true" ]]; then
     echo "Updating www-data uid and gid"
 
-    DOCKER_UID=`stat -c "%u" $MAGENTO_ROOT`
-    DOCKER_GID=`stat -c "%g" $MAGENTO_ROOT`
+    if [[ -z "${DOCKER_UID:-}" ]]; then
+      DOCKER_UID=`stat -c "%u" ${MAGENTO_ROOT}`
+    fi
+    if [[ -z "${DOCKER_GID:-}" ]]; then
+      DOCKER_GID=`stat -c "%g" ${MAGENTO_ROOT}`
+    fi
 
     INCUMBENT_USER=`getent passwd $DOCKER_UID | cut -d: -f1`
     INCUMBENT_GROUP=`getent group $DOCKER_GID | cut -d: -f1`
