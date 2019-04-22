@@ -7,6 +7,8 @@ set -o errexit
 set -o nounset
 #set -o xtrace
 
-[[ "${DEBUG:-}" = "true" ]] && COMPOSER_DEBUG=-vvv && set -o xtrace
+[[ "${DEBUG:-}" = "true" ]] && set -o xtrace || true
 
-sudo -u www-data -- /usr/bin/composer ${COMPOSER_DEBUG:-} $@
+composer_debug=$([[ -z "${COMPOSER_DEBUG:-}" ]] || echo '-vvv' )
+
+sudo -u www-data -- /usr/bin/composer ${composer_debug:-} $@

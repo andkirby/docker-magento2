@@ -7,8 +7,6 @@ set -o nounset
 
 [ "${DEBUG:-}" = "true" ] && set -x
 
-composer_debug=$([ -z "${COMPOSER_DEBUG:-}" ] || echo '-vvv' )
-
 AUTH_JSON_FILE="$(composer -g config data-dir 2>/dev/null)/auth.json"
 
 if [ -f "$AUTH_JSON_FILE" ]; then
@@ -23,7 +21,6 @@ if [ ! -f "$MAGENTO_ROOT/composer.json" ]; then
     echo "Creating Magento ($M2SETUP_VERSION) project from composer"
 
     composer create-project \
-        ${composer_debug} \
         --repository-url=https://repo.magento.com/ \
         magento/project-${M2SETUP_PROJECT_TYPE:-community}-edition=$M2SETUP_VERSION \
         --no-interaction \
@@ -38,7 +35,7 @@ if [ ! -f "$MAGENTO_ROOT/composer.json" ]; then
     fi
 else
     echo "Magento installation found in $MAGENTO_ROOT, installing composer dependencies"
-    composer ${composer_debug} --working-dir=$MAGENTO_ROOT install
+    composer --working-dir=$MAGENTO_ROOT install
 fi
 
 chown -R www-data:www-data $MAGENTO_ROOT
@@ -72,7 +69,7 @@ if [ ! "$M2SETUP_INSTALL_DB" = "false" ]; then
     if [ "${M2SETUP_USE_SAMPLE_DATA:-}" = "true" ]; then
 
       $MAGENTO_COMMAND sampledata:deploy
-      composer ${composer_debug} --working-dir=$MAGENTO_ROOT update
+      composer --working-dir=$MAGENTO_ROOT update
 
       INSTALL_COMMAND="$INSTALL_COMMAND --use-sample-data"
     fi

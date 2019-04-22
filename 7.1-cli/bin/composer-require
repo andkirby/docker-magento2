@@ -11,7 +11,7 @@ set -o errexit
 set -o nounset
 #set -o xtrace
 
-[[ "${DEBUG:-}" = "true" ]] && COMPOSER_DEBUG=-vvv && set -o xtrace
+[[ "${DEBUG:-}" = "true" ]] && set -o xtrace
 
 composer require --no-update ${@}
 

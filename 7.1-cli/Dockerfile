@@ -86,6 +86,8 @@ RUN true \
   && mkdir -p /var/www/.composer \
   && echo '{}' > /var/www/.composer/composer.json \
   && chown www-data:www-data -R /var/www/.composer \
+  # test composer
+  && composer --version \
 
   # Install n98-magerun2.phar and move to /usr/local/bin/
   && curl -O https://files.magerun.net/n98-magerun2.phar && chmod +x ./n98-magerun2.phar && mv ./n98-magerun2.phar /usr/local/bin/ \
