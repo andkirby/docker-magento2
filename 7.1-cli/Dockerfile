@@ -8,7 +8,8 @@ MAINTAINER Nick Jones <nick@nicksays.co.uk>
 
 ADD . /container-files
 
-RUN true \
+RUN apt-get update \
+
   && cp /container-files/etc/php-cli.ini    /usr/local/etc/php/conf.d/zz-magento.ini \
   && cp /container-files/etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini \
   && cp /container-files/etc/mail.ini       /usr/local/etc/php/conf.d/zz-mail.ini \
@@ -26,13 +27,15 @@ RUN true \
     /usr/local/bin/composer \
     /usr/local/bin/composer-require \
 
+  # Install autocomplete
+  && bash /container-files/etc/autocomplete-install.sh \
+
   # remove copied files
   && rm -rf /container-files \
 
   && chmod +x /docker-entrypoint.sh \
 
   # Install dependencies
-  && apt-get update \
   && apt-get install -y \
     libfreetype6-dev \ 
     libicu-dev \ 
@@ -48,6 +51,7 @@ RUN true \
     mysql-client \ 
     git \
     unzip \
+    nano \
 
   # Configure the gd library
   && docker-php-ext-configure \
