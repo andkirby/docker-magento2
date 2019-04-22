@@ -13,4 +13,4 @@ readonly __dir __file
 
 docker-compose \
   --file ${__dir}/../docker-compose.yml ${dev_file_option} \
-  run --rm --name cli.docker cli ${@:-bash}
+  run --rm cli ${@:-bash}
