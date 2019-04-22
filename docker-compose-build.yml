@@ -25,6 +25,7 @@ services:
     links:
     - fpm
     - db
+    - mailcatcher
     volumes_from:
     - appdata
     env_file:
@@ -109,6 +110,15 @@ services:
     - appdata
     links:
     - db
+
+  mailcatcher:
+    container_name: mailcatcher.${M2SETUP_PROJECT}
+    image: tophfr/mailcatcher
+    ports:
+      - "${M2SETUP_PORT_8080}:80"
+      - "25"
+    expose:
+      - "25"
 
   appdata:
     image: tianon/true

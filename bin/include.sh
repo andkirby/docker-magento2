@@ -76,6 +76,7 @@ export M2SETUP_PHP=${M2SETUP_PHP}
 # for "Host > VM > Docker" communications within different projects
 export M2SETUP_PORT_22=$(host_port ${M2SETUP_VIRTUAL_HOST} 22 "${DOCKER_FORWARDING_TYPE:-normal}")
 export M2SETUP_PORT_80=$(host_port ${M2SETUP_VIRTUAL_HOST} 80 "${DOCKER_FORWARDING_TYPE:-normal}")
+export M2SETUP_PORT_8080=$(host_port ${M2SETUP_VIRTUAL_HOST} 8080 "${DOCKER_FORWARDING_TYPE:-normal}")
 export M2SETUP_PORT_443=$(host_port ${M2SETUP_VIRTUAL_HOST} 443 "${DOCKER_FORWARDING_TYPE:-normal}")
 export M2SETUP_PORT_3306=$(host_port ${M2SETUP_VIRTUAL_HOST} 3306 "${DOCKER_FORWARDING_TYPE:-normal}")
 export M2SETUP_PORT_9000=$(host_port ${M2SETUP_VIRTUAL_HOST} 9000 "${DOCKER_FORWARDING_TYPE:-normal}")
