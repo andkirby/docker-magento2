@@ -23,6 +23,8 @@ RUN true \
     /usr/local/bin/magento \
     /usr/local/bin/magerun2 \
     /usr/local/bin/run-cron \
+    /usr/local/bin/composer \
+    /usr/local/bin/composer-require \
 
   # remove copied files
   && rm -rf /container-files \
@@ -42,11 +44,10 @@ RUN true \
     sendmail \ 
     sudo \ 
     cron \ 
-    rsyslog \ 
+    rsyslog \
     mysql-client \ 
     git \
     unzip \
-    nano \
 
   # Configure the gd library
   && docker-php-ext-configure \
@@ -63,6 +64,7 @@ RUN true \
   zip \ 
   soap \ 
   bcmath \
+  mcrypt \
 
   # Install Xdebug (but don't enable)
   && pecl install -o -f xdebug \
@@ -80,7 +82,10 @@ RUN true \
   # Get composer installed to /usr/local/bin/composer
   # composer installation
   && curl -sS https://getcomposer.org/installer \
-    | php -- --install-dir=/usr/local/bin --filename=composer \
+    | php -- --install-dir=/usr/bin --filename=composer \
+  && mkdir -p /var/www/.composer \
+  && echo '{}' > /var/www/.composer/composer.json \
+  && chown www-data:www-data -R /var/www/.composer \
 
   # Install n98-magerun2.phar and move to /usr/local/bin/
   && curl -O https://files.magerun.net/n98-magerun2.phar && chmod +x ./n98-magerun2.phar && mv ./n98-magerun2.phar /usr/local/bin/ \
@@ -106,6 +111,9 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 #ENV COMPOSER_MAGENTO_PASSWORD ""
 #ENV COMPOSER_BITBUCKET_KEY ""
 #ENV COMPOSER_BITBUCKET_SECRET ""
+#ENV COMPOSER_PRIVATE_URL=""
+#ENV COMPOSER_PRIVATE_USERNAME=""
+#ENV COMPOSER_PRIVATE_PASSWORD=""
 
 VOLUME /root/.composer/cache
 
