@@ -19,5 +19,5 @@ type inotifywait 2> /dev/null > /dev/null || sudo yum install -y inotify-tools
 
 # Run watcher in a background process
 nohup bash ${__dir}/watcher.sh \
-    "${__dir}/../*.env ${__dir}/../docker-compose-build.yml"
+    "${__dir}/../*.env ${__dir}/../docker-compose-build.yml" \
     "bash ${__dir}/docker-compose-config-dump" &
