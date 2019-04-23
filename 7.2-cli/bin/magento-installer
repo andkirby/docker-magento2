@@ -7,7 +7,7 @@ set -o nounset
 
 [ "${DEBUG:-}" = "true" ] && set -x
 
-composer_debug=$([ -z "${COMPOSER_DEBUG:-}" ] || echo '-vvv' )
+composer_debug=$([ 'true' != "${COMPOSER_DEBUG:-}" ] || echo '-vvv' )
 
 AUTH_JSON_FILE="$(composer -g config data-dir 2>/dev/null)/auth.json"
 

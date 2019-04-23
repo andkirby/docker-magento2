@@ -9,6 +9,6 @@ set -o nounset
 
 [[ "${DEBUG:-}" = "true" ]] && set -o xtrace || true
 
-composer_debug=$([[ -z "${COMPOSER_DEBUG:-}" ]] || echo '-vvv' )
+composer_debug=$([[ 'true' != "${COMPOSER_DEBUG:-}" ]] || echo '-vvv' )
 
 sudo -u www-data -- /usr/bin/composer ${composer_debug:-} $@
