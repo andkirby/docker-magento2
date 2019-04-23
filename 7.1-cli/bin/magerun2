@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
-[ "$DEBUG" = "true" ] && set -x
+set -o pipefail
+set -o errexit
+set -o nounset
+#set -o xtrace
+
+[[ "${DEBUG:-}" = "true" ]] && set -o xtrace || true
 
 su www-data -s /bin/bash -c "n98-magerun2.phar --root-dir=$MAGENTO_ROOT $*"

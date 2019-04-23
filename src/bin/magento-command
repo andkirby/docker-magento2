@@ -1,6 +1,11 @@
 #!/bin/bash
 
-[ "$DEBUG" = "true" ] && set -x
+set -o pipefail
+set -o errexit
+set -o nounset
+#set -o xtrace
+
+[[ "${DEBUG:-}" = "true" ]] && set -o xtrace || true
 
 MAGENTO_COMMAND="$MAGENTO_ROOT/bin/magento"
 
