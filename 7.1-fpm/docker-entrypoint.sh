@@ -10,30 +10,35 @@ set -o nounset
 # If asked, we'll ensure that the www-data is set to the same uid/gid as the
 # mounted volume.  This works around permission issues with virtualbox shared
 # folders.
-if [[ "${UPDATE_UID_GID:-}" = "true" ]]; then
-    echo "Updating www-data uid and gid"
+update_uid() {
+  echo "Updating www-data uid and gid"
 
-    if [[ -z "${DOCKER_UID:-}" ]]; then
-      DOCKER_UID=`stat -c "%u" ${MAGENTO_ROOT}`
-    fi
-    if [[ -z "${DOCKER_GID:-}" ]]; then
-      DOCKER_GID=`stat -c "%g" ${MAGENTO_ROOT}`
-    fi
+  local docker_uid=$(stat -c "%u" ${MAGENTO_ROOT}) \
+        docker_gid=$(stat -c "%g" ${MAGENTO_ROOT})
+  local incumbent_user=$(getent passwd ${docker_uid} | cut -d: -f1 || true) \
+        incumbent_group=$(getent group ${docker_gid} | cut -d: -f1 || true)
 
-    INCUMBENT_USER=`getent passwd $DOCKER_UID | cut -d: -f1`
-    INCUMBENT_GROUP=`getent group $DOCKER_GID | cut -d: -f1`
+  [[ -n "${incumbent_user:-}" ]] && echo "Incumbent: user = ${incumbent_user}" || true
+  [[ -n "${incumbent_group:-}" ]] && echo "Incumbent: group = ${incumbent_group}" || true
 
-    echo "Docker: uid = $DOCKER_UID, gid = $DOCKER_GID"
-    echo "Incumbent: user = $INCUMBENT_USER, group = $INCUMBENT_GROUP"
+  # Once we've established the ids and incumbent ids then we need to free them
+  # up (if necessary) and then make the change to www-data.
 
-    # Once we've established the ids and incumbent ids then we need to free them
-    # up (if necessary) and then make the change to www-data.
+  if [[ -n "${incumbent_user:-}" ]] && [[ "${incumbent_user:-}" != 'www-data' ]]; then
+      usermod -u 99${docker_uid} ${incumbent_user}
+  fi
+  if [[ -n "${incumbent_group:-}" ]] && [[ "${incumbent_group:-}" != 'www-data' ]]; then
+      groupmod -g 99${docker_gid} ${incumbent_group}
+  fi
 
-    [ -n "${INCUMBENT_USER:-}" ] && usermod -u 99$DOCKER_UID $INCUMBENT_USER
-    usermod -u $DOCKER_UID www-data
+  usermod -u ${docker_uid} www-data
+  groupmod -g ${docker_gid} www-data
+}
 
-    [ -n "${INCUMBENT_GROUP:-}" ] && groupmod -g 99$DOCKER_GID $INCUMBENT_GROUP
-    groupmod -g $DOCKER_GID www-data
+# Code #########################################################################
+
+if [[ "${UPDATE_UID_GID:-}" = 'true' ]]; then
+  update_uid
 fi
 
 # Ensure our Magento directory exists
