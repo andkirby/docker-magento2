@@ -74,7 +74,7 @@ services:
     links:
     - db
     volumes:
-    - ~/.composer/cache:/root/.composer/cache
+    - '~/.composer/cache:/var/www/.composer/cache'
     volumes_from:
     - appdata
     env_file:
