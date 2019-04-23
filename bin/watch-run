@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+##############################################################################
+# Watch *.env and docker-compose-build.yml file for changes and generate    ##
+# default docker-compose-build.yml                                          ##
+##############################################################################
+
+set -o pipefail
+set -o errexit
+set -o nounset
+#set -o xtrace
+
+# Set magic variables for current file & dir
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+__file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+readonly __dir __file
+
+# Check installed "inotifywait" tools
+type inotifywait 2> /dev/null > /dev/null || sudo yum install -y inotify-tools
+
+# Run watcher in a background process
+nohup bash ${__dir}/watcher.sh \
+    "${__dir}/../*.env ${__dir}/../docker-compose-build.yml"
+    "bash ${__dir}/docker-compose-config-dump" &
