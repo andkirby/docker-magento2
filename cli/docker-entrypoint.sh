@@ -13,8 +13,8 @@ set -o nounset
 update_uid() {
   echo "Updating www-data uid and gid"
 
-  local docker_uid=$(stat -c "%u" ${MAGENTO_ROOT}) \
-        docker_gid=$(stat -c "%g" ${MAGENTO_ROOT})
+  local docker_uid=${DOCKER_UID:-$(stat -c "%u" ${MAGENTO_ROOT})} \
+        docker_gid=${DOCKER_GID:-$(stat -c "%g" ${MAGENTO_ROOT})}
   local incumbent_user=$(getent passwd ${docker_uid} | cut -d: -f1 || true) \
         incumbent_group=$(getent group ${docker_gid} | cut -d: -f1 || true)
 
