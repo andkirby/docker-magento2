@@ -60,6 +60,8 @@ services:
     - '${M2SETUP_PORT_3306}:3306'
     volumes_from:
     - dbdata
+    volumes:
+    - './db/my.conf:/etc/mysql/conf.d/magento.conf'
     environment:
     - MYSQL_ROOT_PASSWORD=magento2
     - MYSQL_DATABASE=magento2
