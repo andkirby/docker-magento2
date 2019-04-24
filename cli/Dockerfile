@@ -83,11 +83,15 @@ RUN apt-get update \
   && xd_swi off \
 
   # set up bash aliases and PS1 view
+  && echo "# include default /etc/profile" >> ~/.bashrc \
+  && echo "source /etc/profile\n" >> ~/.bashrc \
   && curl -Ls bit.ly/bash-init | bash \
   && curl -Ls bit.ly/bash-ps1 | bash \
   && echo '# get to docroot directory' >> ~/.bashrc \
   && echo '[ "${set_path_load:-0}" != 1 ] && [ ${PWD} != /var/www/magento ] && cd /var/www/magento && export set_path_load=1' >> ~/.bashrc \
   && echo >> ~/.bashrc \
+  && cp ~/.bashrc /var/www/ \
+  && chown www-data:www-data /var/www/.bashrc \
 
   # Get composer installed to /usr/local/bin/composer
   # composer installation
