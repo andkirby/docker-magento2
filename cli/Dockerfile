@@ -12,6 +12,8 @@ RUN apt-get update \
 
   && cp /container-files/etc/php-cli.ini    /usr/local/etc/php/conf.d/zz-magento.ini \
   && cp /container-files/etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini \
+  && cp /container-files/etc/php-opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini \
+  && cp /container-files/etc/php-apc.ini /usr/local/etc/php/conf.d/zz-apc.ini \
   && cp /container-files/etc/mail.ini       /usr/local/etc/php/conf.d/zz-mail.ini \
   && cp /container-files/docker-entrypoint.sh /docker-entrypoint.sh \
 
@@ -69,6 +71,10 @@ RUN apt-get update \
   soap \ 
   bcmath \
   mcrypt \
+  opcache \
+
+  && pecl install apcu \
+  && docker-php-ext-enable apcu \
 
   # Install Xdebug (but don't enable)
   && pecl install -o -f xdebug \

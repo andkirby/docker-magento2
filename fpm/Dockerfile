@@ -12,6 +12,8 @@ RUN true \
   && cp /container-files/etc/php-fpm.ini    /usr/local/etc/php/conf.d/zz-magento.ini \
   && cp /container-files/etc/php-fpm.conf   /usr/local/etc/ \
   && cp /container-files/etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini \
+  && cp /container-files/etc/php-opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini \
+  && cp /container-files/etc/php-apc.ini /usr/local/etc/php/conf.d/zz-apc.ini \
   && cp /container-files/etc/mail.ini       /usr/local/etc/php/conf.d/zz-mail.ini \
   && cp /container-files/docker-entrypoint.sh /docker-entrypoint.sh \
   && rm -rf /container-files \
@@ -46,6 +48,10 @@ RUN true \
     soap \
     bcmath \
     mcrypt \
+    opcache \
+
+  && pecl install apcu \
+  && docker-php-ext-enable apcu \
 
   # Install Xdebug (but don't enable)
   && pecl install -o -f xdebug \
