@@ -18,6 +18,9 @@ fi
 MAGENTO_COMMAND="magento-command"
 COMPOSER_COMMAND=$(type composer | awk '{print $3}')
 
+# Workaround to prevent error: Composer could not find a composer.json file in /
+echo '{}' > /composer.json
+
 # speed up "composer install" command by using hirak/prestissimo package
 # It will use cURL for parallel packages downloading
 composer global show hirak/prestissimo 1> /dev/null 2> /dev/null \
@@ -130,11 +133,11 @@ set_config() {
 }
 
 post_install () {
-  if [[ "${MAGENTO_RUN_MODE}" != 'production'  ]] && [[ -d ${MAGENTO_ROOT}/config/developer ]]; then
-    set_config ${MAGENTO_ROOT}/config/developer || true
+  if [[ "${MAGENTO_RUN_MODE}" != 'production'  ]] && [[ -d ~/magento-config/developer ]]; then
+    set_config ~/magento-config/developer || true
   fi
-  if [[ "${MAGENTO_RUN_MODE}" != 'production'  ]] && [[ -d ${MAGENTO_ROOT}/config ]]; then
-    set_config ${MAGENTO_ROOT}/config || true
+  if [[ "${MAGENTO_RUN_MODE}" != 'production'  ]] && [[ -d ~/magento-config ]]; then
+    set_config ~/magento-config || true
   fi
 
   if [[ -n "${M2SETUP_CACHE_DISABLE:-}" ]]; then
