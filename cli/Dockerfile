@@ -6,36 +6,7 @@ FROM php:7.1-cli
 
 MAINTAINER Nick Jones <nick@nicksays.co.uk>
 
-ADD . /container-files
-
 RUN apt-get update \
-
-  && cp /container-files/etc/php-cli.ini    /usr/local/etc/php/conf.d/zz-magento.ini \
-  && cp /container-files/etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini \
-  && cp /container-files/etc/php-opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini \
-  && cp /container-files/etc/php-apc.ini /usr/local/etc/php/conf.d/zz-apc.ini \
-  && cp /container-files/etc/mail.ini       /usr/local/etc/php/conf.d/zz-mail.ini \
-  && cp /container-files/docker-entrypoint.sh /docker-entrypoint.sh \
-
-  # set up binaries
-  && cp /container-files/bin/* /usr/local/bin/ \
-  && cp /usr/local/bin/magento-command /usr/local/bin/magento \
-  && chmod +x \
-    /usr/local/bin/magento-installer \
-    /usr/local/bin/magento-command \
-    /usr/local/bin/magento \
-    /usr/local/bin/magerun2 \
-    /usr/local/bin/run-cron \
-    /usr/local/bin/composer \
-    /usr/local/bin/composer-require \
-
-  # Install autocomplete
-  && bash /container-files/etc/autocomplete-install.sh \
-
-  # remove copied files
-  && rm -rf /container-files \
-
-  && chmod +x /docker-entrypoint.sh \
 
   # Install dependencies
   && apt-get install -y \
@@ -104,14 +75,50 @@ RUN apt-get update \
   && composer --version \
 
   # Install n98-magerun2.phar and move to /usr/local/bin/
-  && curl -O https://files.magerun.net/n98-magerun2.phar && chmod +x ./n98-magerun2.phar && mv ./n98-magerun2.phar /usr/local/bin/ \
+  && curl -L https://files.magerun.net/n98-magerun2.phar --output /usr/local/bin/n98-magerun2.phar \
+  && chmod +x /usr/local/bin/n98-magerun2.phar \
 
   # Install magedbm2.phar and move to /usr/local/bin
-  && curl -LO https://s3.eu-west-2.amazonaws.com/magedbm2-releases/magedbm2.phar && chmod +x ./magedbm2.phar && mv ./magedbm2.phar /usr/local/bin \
+  && curl -L https://s3.eu-west-2.amazonaws.com/magedbm2-releases/magedbm2.phar --output /usr/local/bin/magedbm2.phar \
+  && chmod +x /usr/local/bin/magedbm2.phar \
 
   # Install mageconfigsync and move to /usr/local/bin
-  && curl -L https://github.com/punkstar/mageconfigsync/releases/download/0.5.0-beta.1/mageconfigsync-0.5.0-beta.1.phar > mageconfigsync.phar \
-  && chmod +x ./mageconfigsync.phar && mv ./mageconfigsync.phar /usr/local/bin
+  && curl -L https://github.com/punkstar/mageconfigsync/releases/download/0.5.0-beta.1/mageconfigsync-0.5.0-beta.1.phar \
+    --output /usr/local/bin/mageconfigsync.phar \
+  && chmod +x /usr/local/bin/mageconfigsync.phar
+
+ADD . /container-files
+
+RUN true \
+
+  && cp /container-files/etc/php-cli.ini    /usr/local/etc/php/conf.d/zz-magento.ini \
+  && cp /container-files/etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini \
+  && cp /container-files/etc/php-opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini \
+  && cp /container-files/etc/php-apc.ini /usr/local/etc/php/conf.d/zz-apc.ini \
+  && cp /container-files/etc/mail.ini       /usr/local/etc/php/conf.d/zz-mail.ini \
+  && cp /container-files/docker-entrypoint.sh /docker-entrypoint.sh \
+
+  # set up binaries
+  && cp /container-files/bin/* /usr/local/bin/ \
+  && cp /usr/local/bin/magento-command /usr/local/bin/magento \
+  && chmod +x \
+    /usr/local/bin/magento-installer \
+    /usr/local/bin/magento-command \
+    /usr/local/bin/magento \
+    /usr/local/bin/magerun2 \
+    /usr/local/bin/run-cron \
+    /usr/local/bin/composer \
+    /usr/local/bin/composer-require \
+
+  && /usr/local/bin/composer global require hirak/prestissimo --prefer-dist \
+
+  # Install autocomplete
+  && bash /container-files/etc/autocomplete-install.sh \
+
+  # remove copied files
+  && rm -rf /container-files \
+
+  && chmod +x /docker-entrypoint.sh
 
 # ENV PHP_MEMORY_LIMIT -1
 # ENV PHP_ENABLE_XDEBUG false
