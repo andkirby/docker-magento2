@@ -16,7 +16,7 @@ if [[ -f "${AUTH_JSON_FILE}" ]]; then
 fi
 
 MAGENTO_COMMAND="magento-command"
-COMPOSER_COMMAND=$(type composer | awk '{print ${3}}')
+COMPOSER_COMMAND=$(type composer | awk '{print $3}')
 
 # speed up "composer install" command by using hirak/prestissimo package
 # It will use cURL for parallel packages downloading
@@ -41,7 +41,7 @@ if [[ ! -f "${MAGENTO_ROOT}/composer.json" ]]; then
     fi
 else
     echo "Magento installation found in ${MAGENTO_ROOT}, installing composer dependencies"
-    composer --working-dir=${MAGENTO_ROOT} install
+    composer --working-dir=${MAGENTO_ROOT} install --optimize-autoloader
 fi
 
 chown -R www-data:www-data ${MAGENTO_ROOT}
@@ -125,7 +125,7 @@ set_config() {
 
   find ${config_files_path} -type f | xargs -i cat {} | grep -E '^\w+' \
     | while read line; do
-        magerun2 config:set ${line}
+        magerun2 config:store:set ${line}
       done
 }
 
