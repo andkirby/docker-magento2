@@ -116,3 +116,30 @@ fi
 chown -R www-data:www-data $MAGENTO_ROOT
 
 echo "Installation complete"
+
+########################### Post Installation ###########################
+
+# Set Magento configuration from files
+set_config() {
+  local config_files_path=${1}
+
+  find ${config_files_path} -type f | xargs -i cat {} | grep -E '^\w+' \
+    | while read line; do
+        magerun2 config:set ${line}
+      done
+}
+
+post_install () {
+  if [[ "${MAGENTO_RUN_MODE}" != 'production'  ]] && [[ -d ${MAGENTO_ROOT}/config/developer ]]; then
+    set_config ${MAGENTO_ROOT}/config/developer || true
+  fi
+  if [[ "${MAGENTO_RUN_MODE}" != 'production'  ]] && [[ -d ${MAGENTO_ROOT}/config ]]; then
+    set_config ${MAGENTO_ROOT}/config || true
+  fi
+
+  if [[ -n "${M2SETUP_CACHE_DISABLE:-}" ]]; then
+    ${MAGENTO_COMMAND} cache:disable ${M2SETUP_CACHE_DISABLE} || true
+  fi
+}
+
+post_install
