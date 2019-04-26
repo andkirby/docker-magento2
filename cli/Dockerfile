@@ -88,7 +88,7 @@ RUN apt-get update \
   && chmod +x /usr/local/bin/mageconfigsync.phar \
 
   # speed up composer-install
-  && /usr/local/bin/composer global require hirak/prestissimo --prefer-dist
+  && sudo -u www-data -- /usr/bin/composer global require hirak/prestissimo --prefer-dist
 
 ADD . /container-files
 
