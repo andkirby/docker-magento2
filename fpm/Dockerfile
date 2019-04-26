@@ -9,15 +9,6 @@ MAINTAINER Nick Jones <nick@nicksays.co.uk>
 ADD . /container-files
 
 RUN true \
-  && cp /container-files/etc/php-fpm.ini    /usr/local/etc/php/conf.d/zz-magento.ini \
-  && cp /container-files/etc/php-fpm.conf   /usr/local/etc/ \
-  && cp /container-files/etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini \
-  && cp /container-files/etc/php-opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini \
-  && cp /container-files/etc/php-apc.ini /usr/local/etc/php/conf.d/zz-apc.ini \
-  && cp /container-files/etc/mail.ini       /usr/local/etc/php/conf.d/zz-mail.ini \
-  && cp /container-files/docker-entrypoint.sh /docker-entrypoint.sh \
-  && rm -rf /container-files \
-  && chmod +x /docker-entrypoint.sh \
 
   # Install dependencies
   && apt-get update \
@@ -56,7 +47,19 @@ RUN true \
   # Install Xdebug (but don't enable)
   && pecl install -o -f xdebug \
   && docker-php-ext-enable xdebug.so \
-  && curl -Ls https://raw.github.com/rikby/xdebug-switcher/master/download | bash \
+  && curl -Ls https://raw.github.com/rikby/xdebug-switcher/master/download | bash
+
+RUN true \
+  && cp /container-files/etc/php-fpm.ini    /usr/local/etc/php/conf.d/zz-magento.ini \
+  && cp /container-files/etc/php-fpm.conf   /usr/local/etc/ \
+  && cp /container-files/etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini \
+  && cp /container-files/etc/php-opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini \
+  && cp /container-files/etc/php-apc.ini /usr/local/etc/php/conf.d/zz-apc.ini \
+  && cp /container-files/etc/mail.ini       /usr/local/etc/php/conf.d/zz-mail.ini \
+  && cp /container-files/docker-entrypoint.sh /docker-entrypoint.sh \
+  && rm -rf /container-files \
+  && chmod +x /docker-entrypoint.sh \
+  # disable xdebug
   && xd_swi off
 
 # ENV PHP_MEMORY_LIMIT 2G
