@@ -85,7 +85,10 @@ RUN apt-get update \
   # Install mageconfigsync and move to /usr/local/bin
   && curl -L https://github.com/punkstar/mageconfigsync/releases/download/0.5.0-beta.1/mageconfigsync-0.5.0-beta.1.phar \
     --output /usr/local/bin/mageconfigsync.phar \
-  && chmod +x /usr/local/bin/mageconfigsync.phar
+  && chmod +x /usr/local/bin/mageconfigsync.phar \
+
+  # speed up composer-install
+  && /usr/local/bin/composer global require hirak/prestissimo --prefer-dist
 
 ADD . /container-files
 
@@ -109,8 +112,6 @@ RUN true \
     /usr/local/bin/run-cron \
     /usr/local/bin/composer \
     /usr/local/bin/composer-require \
-
-  && /usr/local/bin/composer global require hirak/prestissimo --prefer-dist \
 
   # Install autocomplete
   && bash /container-files/etc/autocomplete-install.sh \
