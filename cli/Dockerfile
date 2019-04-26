@@ -92,7 +92,13 @@ RUN apt-get update \
 
 ADD . /container-files
 
+ARG DOCKER_UID=1000
+ARG DOCKER_GID=1000
+
 RUN true \
+
+  && usermod -u ${DOCKER_UID} www-data \
+  && groupmod -g ${DOCKER_GID} www-data \
 
   && cp /container-files/etc/php-cli.ini    /usr/local/etc/php/conf.d/zz-magento.ini \
   && cp /container-files/etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini \
