@@ -122,6 +122,13 @@ RUN true \
   # Install autocomplete
   && bash /container-files/etc/autocomplete-install.sh \
 
+  && echo '# aliases from Dockerfile' >> /etc/profile \
+  && echo 'alias mg=magento' >> /etc/profile \
+  && echo 'alias mgi=magento-installer' >> /etc/profile \
+  && echo 'alias c=composer' >> /etc/profile \
+  && echo 'alias cr=composer-require' >> /etc/profile \
+  && echo 'alias crm=composer-remove' >> /etc/profile \
+
   # remove copied files
   && rm -rf /container-files \
 
