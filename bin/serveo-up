@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+set -o errexit
+set -o nounset
+#set -o xtrace
+
+# Set magic variables for current file & dir
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+__file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+readonly __dir __file
+
+source ${__dir}/../global.env
+
+export M2SETUP_PROJECT
+
+docker_compose_file=--file=${__dir}/../docker-compose.yml
+docker_compose_service=varnish
+
+##
+# E.g: serveo_tunnel_host 0.0.0.0:1234 https
+tunnel_host() {
+   echo ${M2SETUP_PROJECT}.serveo.net
+}
+
+app_current_url() {
+  docker-compose ${docker_compose_file:-} run --rm cli magento config:show web/secure/base_url  2> /dev/null | grep http | tr -d " \r"
+}
+
+app_host=$(docker-compose ${docker_compose_file:-} port ${docker_compose_service} 80)
+echo "Local:  ${app_host}"
+echo "Remote: "$(tunnel_host)
+
+# set new hostname in magento
+if [[ "$(app_current_url)" != "https://$(tunnel_host)/" ]]; then
+  echo "Updating Magento hostname..."
+  docker-compose ${docker_compose_file:-} run --rm cli magento config:set web/secure/base_url https://$(tunnel_host)/ 2> /dev/null > /dev/null
+  docker-compose ${docker_compose_file:-} run --rm cli magento config:set web/unsecure/base_url http://$(tunnel_host)/ 2> /dev/null > /dev/null
+  docker-compose ${docker_compose_file:-} run --rm cli magento cache:clean config 2> /dev/null > /dev/null
+  docker-compose ${docker_compose_file:-} restart web fpm varnish 2> /dev/null > /dev/null
+  echo "Magento configuration has been updated."
+fi
+
+echo "Magento URL: https://"$(tunnel_host)
+
+echo 'Starting serveo...'
+
+sleep 1
+
+ssh_bin='ssh'
+if autossh -V > /dev/null 2> /dev/null; then
+  ssh_bin='autossh -M 0'
+fi
+
+# Start SSH port forwarding
+${ssh_bin} -R $(tunnel_host):80:${app_host} serveo.net
