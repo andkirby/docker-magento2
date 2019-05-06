@@ -82,14 +82,18 @@ setup_php_ini() {
     && sed -i "s/upload_max_filesize ?=.*/upload_max_filesize = ${PHP_UPLOAD_MAX_FILESIZE}/" \
           /usr/local/etc/php/conf.d/zz-magento.ini
 
-  # Enable Xdebug
-  [[ "${PHP_ENABLE_XDEBUG:-}" = "true" ]] && xd_swi on || xd_swi off
+  # On/Off Xdebug
+  [[ "${PHP_ENABLE_XDEBUG:-}" = "true" ]] && xd_swi on || true
+  [[ "${PHP_ENABLE_XDEBUG:-}" = "false" ]] && xd_swi off || true
 }
 
 ##
 # Setup composer keys
 #
 setup_composer() {
+  #disable pipefail
+  set +o pipefail
+
   # Configure composer
   [[ -n "${COMPOSER_GITHUB_TOKEN:-}" ]] && \
     composer config --global github-oauth.github.com ${COMPOSER_GITHUB_TOKEN}
@@ -108,6 +112,9 @@ setup_composer() {
       composer config --global repositories.private composer ${COMPOSER_PRIVATE_URL} && \
       composer config --global http-basic.$(echo ${COMPOSER_PRIVATE_URL} | sed -r 's#(^https?://)([^/]+)(.*)#\2#g') \
         ${COMPOSER_PRIVATE_USERNAME} ${COMPOSER_PRIVATE_PASSWORD}
+
+  #enable pipefail
+  set -o pipefail
 }
 
 ##
