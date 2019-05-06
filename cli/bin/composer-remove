@@ -13,7 +13,9 @@ set -o nounset
 
 [[ "${DEBUG:-}" = "true" ]] && set -o xtrace
 
+package_name=$(echo ${@} | grep -Eo '(([A-Za-z0-9_]|-)+/([A-Za-z0-9_]|-)+)')
+
 composer remove --no-update ${@}
 
 # run update by package name only (a pkg name retrieved by the regular expression)
-composer update $(echo ${@} | grep -Eo '(([A-Za-z0-9_]|-)+/([A-Za-z0-9_]|-)+)') ${COMPOSER_NO_DEV:-'--no-dev'}
+composer update ${package_name} ${COMPOSER_NO_DEV:-'--no-dev'}
