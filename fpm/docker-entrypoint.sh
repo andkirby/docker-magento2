@@ -51,10 +51,10 @@ chown www-data:www-data $MAGENTO_ROOT
 # https://stackoverflow.com/a/28467090
 #
 if [ "${USE_MAILCATCHER:-}" == "true" ]; then
-  sed -ri "s/mailhub=.*/mailhub=${MAILCATCHER_HOST:-mailcatcher:1025}/" /etc/ssmtp/ssmtp.conf
+  sed -ri "s/mailhub=.*/mailhub=${SSMTP_SMTP_SERVER:-mailcatcher:1025}/" /etc/ssmtp/ssmtp.conf
 
-  if [[ "${MAILCATCHER_REWRITE_DOMAIN:-1}" = '1' ]]; then
-    sed -ri "s/[#]?rewriteDomain=.*/rewriteDomain=${MAILCATCHER_REWRITE_DOMAIN}/" /etc/ssmtp/ssmtp.conf
+  if [[ -n "${SSMTP_REWRITE_DOMAIN:-}" ]]; then
+    sed -ri "s/[#]?rewriteDomain=.*/rewriteDomain=${SSMTP_REWRITE_DOMAIN}/" /etc/ssmtp/ssmtp.conf
     sed -ri "s/[#]?FromLineOverride=.*/FromLineOverride=YES/" /etc/ssmtp/ssmtp.conf
   fi
 else
