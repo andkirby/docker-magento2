@@ -115,13 +115,12 @@ services:
     - db
 
   mailcatcher:
+    image: yappabe/mailhog
+    environment:
+      DNSDOCK_ALIAS: mailhog.${M2SETUP_PROJECT}
     container_name: mailcatcher.${M2SETUP_PROJECT}
-    image: yappabe/mailcatcher
     ports:
-      - "${M2SETUP_PORT_8080}:80"
-      - "25"
-    expose:
-      - "25"
+      - "${M2SETUP_PORT_8080}:8025"
 
   appdata:
     image: tianon/true
