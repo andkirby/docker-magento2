@@ -19,8 +19,7 @@ RUN true \
     libmcrypt-dev \ 
     libpng-dev \ 
     libxslt1-dev \ 
-    sendmail-bin \ 
-    sendmail \ 
+    ssmtp \
     sudo \
 
   # Configure the gd library

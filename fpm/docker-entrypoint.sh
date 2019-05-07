@@ -45,9 +45,21 @@ fi
 mkdir -p $MAGENTO_ROOT
 chown www-data:www-data $MAGENTO_ROOT
 
-# Configure Sendmail if required
-if [ "${ENABLE_SENDMAIL:-}" == "true" ]; then
-    /etc/init.d/sendmail start
+##
+# Set up forwarding emails into mailcatcher container
+#
+# https://stackoverflow.com/a/28467090
+#
+if [ "${USE_MAILCATCHER:-}" == "true" ]; then
+  sed -ri "s/mailhub=.*/mailhub=${MAILCATCHER_HOST:-mailcatcher:1025}/" /etc/ssmtp/ssmtp.conf
+
+  if [[ "${MAILCATCHER_REWRITE_DOMAIN:-1}" = '1' ]]; then
+    sed -ri "s/[#]?rewriteDomain=.*/rewriteDomain=${MAILCATCHER_REWRITE_DOMAIN}/" /etc/ssmtp/ssmtp.conf
+    sed -ri "s/[#]?FromLineOverride=.*/FromLineOverride=YES/" /etc/ssmtp/ssmtp.conf
+  fi
+else
+  # enable using default 25 port
+  sed -ri "s/mailhub=.*/mailhub=/" /etc/ssmtp/ssmtp.conf
 fi
 
 # Substitute in php.ini values

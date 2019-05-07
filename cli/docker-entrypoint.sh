@@ -88,6 +88,25 @@ setup_php_ini() {
 }
 
 ##
+# Set up forwarding emails into mailcatcher container
+#
+# https://stackoverflow.com/a/28467090
+#
+setup_mailcatcher() {
+  if [[ "${USE_MAILCATCHER:-}" = 'true' ]]; then
+    sed -ri "s/mailhub=.*/mailhub=${MAILCATCHER_HOST:-mailcatcher:1025}/" /etc/ssmtp/ssmtp.conf
+
+    if [[ "${MAILCATCHER_REWRITE_DOMAIN:-1}" = '1' ]]; then
+      sed -ri "s/[#]?rewriteDomain=.*/rewriteDomain=${MAILCATCHER_REWRITE_DOMAIN}/" /etc/ssmtp/ssmtp.conf
+      sed -ri "s/[#]?FromLineOverride=.*/FromLineOverride=YES/" /etc/ssmtp/ssmtp.conf
+    fi
+  else
+    # enable using default 25 port
+    sed -ri "s/mailhub=.*/mailhub=/" /etc/ssmtp/ssmtp.conf
+  fi
+}
+
+##
 # Setup composer keys
 #
 setup_composer() {
@@ -134,12 +153,10 @@ fi
 files_init
 
 # Magento cron setup
-setup_cron
+#setup_cron
 
-# Configure Sendmail if required
-if [[ "${ENABLE_SENDMAIL:-}" == 'true' ]]; then
-    setup_sendmail
-fi
+# Set up forwarding emails into mailcatcher
+setup_mailcatcher
 
 setup_php_ini
 setup_composer

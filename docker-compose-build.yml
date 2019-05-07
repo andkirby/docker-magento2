@@ -25,7 +25,6 @@ services:
     links:
     - fpm
     - db
-    - mailcatcher
     volumes_from:
     - appdata
     env_file:
@@ -48,10 +47,16 @@ services:
     - '${M2SETUP_PORT_9000}:9000'
     links:
     - db
+    - mailcatcher
     volumes_from:
     - appdata
     env_file:
     - global.env
+    environment:
+    # Mailcatcher set up
+    - USE_MAILCATCHER=true
+    - SSMTP_SMTP_SERVER=mailcatcher:1025
+    - SSMTP_REWRITE_DOMAIN=${M2SETUP_VIRTUAL_HOST}
 
   db:
     container_name: db.${M2SETUP_PROJECT}
@@ -100,6 +105,10 @@ services:
     - M2SETUP_VERSION=2.3
     #- M2SETUP_USE_SAMPLE_DATA=false
     - M2SETUP_PROJECT_TYPE=community
+    # Mailcatcher set up
+    - USE_MAILCATCHER=true
+    - SSMTP_SMTP_SERVER=mailcatcher:1025
+    - SSMTP_REWRITE_DOMAIN=${M2SETUP_VIRTUAL_HOST}
 
   cron:
     hostname: cron.${M2SETUP_PROJECT}
@@ -108,7 +117,11 @@ services:
       context: cli/
     command: run-cron
     environment:
-    - ENABLE_SENDMAIL=true
+      - ENABLE_SENDMAIL=false
+      # Mailcatcher set up
+      - USE_MAILCATCHER=true
+      - SSMTP_SMTP_SERVER=mailcatcher:1025
+      - SSMTP_REWRITE_DOMAIN=${M2SETUP_VIRTUAL_HOST}
     volumes_from:
     - appdata
     links:
@@ -120,6 +133,7 @@ services:
       DNSDOCK_ALIAS: mailhog.${M2SETUP_PROJECT}
     container_name: mailcatcher.${M2SETUP_PROJECT}
     ports:
+      # HTTP web UI 8080 port mapping
       - "${M2SETUP_PORT_8080}:8025"
 
   appdata:

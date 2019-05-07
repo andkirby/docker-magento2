@@ -16,12 +16,11 @@ RUN apt-get update \
     libmcrypt-dev \ 
     libpng-dev \ 
     libxslt1-dev \ 
-    sendmail-bin \ 
-    sendmail \ 
-    sudo \ 
-    cron \ 
+    ssmtp \
+    sudo \
+    cron \
     rsyslog \
-    mysql-client \ 
+    mysql-client \
     git \
     unzip \
     nano \
@@ -93,6 +92,7 @@ RUN apt-get update \
 
 ADD . /container-files
 
+# User IDs in host of docker
 ARG DOCKER_UID=1000
 ARG DOCKER_GID=1000
 
