@@ -83,6 +83,7 @@ services:
     - ./global.env
     - ./composer.env
     environment:
+    - ENABLE_SENDMAIL=false
     - M2SETUP_INSTALL_DB=true
     - M2SETUP_DB_HOST=db
     - M2SETUP_DB_NAME=magento2
@@ -101,10 +102,10 @@ services:
     - M2SETUP_PROJECT_TYPE=community
 
   cron:
+    hostname: cron.${M2SETUP_PROJECT}
     container_name: cron.${M2SETUP_PROJECT}
     build:
       context: cli/
-    hostname: cron.${M2SETUP_PROJECT}
     command: run-cron
     environment:
     - ENABLE_SENDMAIL=true
