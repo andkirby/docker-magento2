@@ -1,2 +1,3 @@
 /magento
 /*.env
+/docker-compose.yml
