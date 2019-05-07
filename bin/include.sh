@@ -70,7 +70,7 @@ host_port() {
 export DOCKER_IMAGE_PREFIX=$(echo ${__dir} | sed -r 's|.*/([^/]+)/bin$|\1|' | tr -d '.-')
 
 # PHP version
-export M2SETUP_PHP=${M2SETUP_PHP}
+#export M2SETUP_PHP=${M2SETUP_PHP}
 
 # Generate environment variable for ports
 # for "Host > VM > Docker" communications within different projects
