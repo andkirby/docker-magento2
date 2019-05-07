@@ -116,7 +116,7 @@ services:
 
   mailcatcher:
     container_name: mailcatcher.${M2SETUP_PROJECT}
-    image: tophfr/mailcatcher
+    image: yappabe/mailcatcher
     ports:
       - "${M2SETUP_PORT_8080}:80"
       - "25"
