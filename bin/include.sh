@@ -60,10 +60,10 @@ host_port() {
 . ${__dir}/../global.env
 
 # use custom project name or generate it from parent directory name
-[ -n "${M2SETUP_PROJECT}" ] && export M2SETUP_PROJECT=${M2SETUP_PROJECT} \
+[[ -n "${M2SETUP_PROJECT}" ]] && export M2SETUP_PROJECT=${M2SETUP_PROJECT} \
   || export M2SETUP_PROJECT=${M2SETUP_PROJECT:-$(echo ${__dir} | sed -r 's|.*/([^/]+)/bin$|\1|')}
 
-[ -n "${M2SETUP_VIRTUAL_HOST:-}" ] && export M2SETUP_VIRTUAL_HOST=${M2SETUP_VIRTUAL_HOST} \
+[[ -n "${M2SETUP_VIRTUAL_HOST:-}" ]] && export M2SETUP_VIRTUAL_HOST=${M2SETUP_VIRTUAL_HOST} \
   || export M2SETUP_VIRTUAL_HOST=${M2SETUP_PROJECT}.cc
 
 # generate docker image pefix (Docker does this automatically)
@@ -82,6 +82,6 @@ export M2SETUP_PORT_3306=$(host_port ${M2SETUP_VIRTUAL_HOST} 3306 "${DOCKER_FORW
 export M2SETUP_PORT_9000=$(host_port ${M2SETUP_VIRTUAL_HOST} 9000 "${DOCKER_FORWARDING_TYPE:-normal}")
 
 dev_file_option=''
-if [ -f ${__dir}/../docker-compose.dev.yml ]; then
+if [[ -f ${__dir}/../docker-compose.dev.yml ]]; then
   dev_file_option="--file ${__dir}/../docker-compose.dev.yml"
 fi
