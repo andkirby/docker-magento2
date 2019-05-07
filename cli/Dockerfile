@@ -119,6 +119,7 @@ RUN true \
     /usr/local/bin/run-cron \
     /usr/local/bin/composer \
     /usr/local/bin/composer-require \
+    /usr/local/bin/composer-remove \
 
   # Install autocomplete
   && bash /container-files/etc/autocomplete-install.sh \
