@@ -27,27 +27,41 @@ bash bin/build
 
 ### 3. Dump your own static `docker-compose.yml` file
 
-This file will use created images directly.
-```shell
-bash bin/docker-compose-images-config-dump
-```
-Or, to have an ability to build image from directories please use this command instead:
+Build your root `docker-compose.yml` file based upon `docker-compose-build.yml` and `*.env` files:
 ```shell
 bash bin/docker-compose-config-dump
 ```
 
 ### 4. Install
 
+SHORTCUT:
+```shell
+bin/cli magento-installer
+``` 
+
+Actually, it does:
 ```shell
 docker-compose run --rm cli magento-installer
 ```
-NOTE: Please set `--rm` to remove a created container after run. 
+NOTE: Please set `--rm` to remove a created container after run.
+
 
 ### 5. Wake up
 
 ```shell
 docker-compose up -d
 docker-compose restart
+```
+
+### 6. Get CLI
+
+Just run:
+```shell
+bin/cli
+```
+or:
+```
+docker-compose run --rm cli
 ```
 
 (---------End Of Kirby's modification---------)
