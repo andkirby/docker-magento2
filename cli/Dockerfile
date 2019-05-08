@@ -24,7 +24,7 @@ RUN apt-get update \
     git \
     unzip \
     nano \
-  && sh -c 'find /usr/share/nano/ -name *.nanorc | xargs echo "include {}"' > ~/.nanorc \
+  && sh -c 'find /usr/share/nano/ -name *.nanorc | xargs -i echo "include {}"' > ~/.nanorc \
 
   # Configure the gd library
   && docker-php-ext-configure \
