@@ -153,7 +153,7 @@ fi
 files_init
 
 # Magento cron setup
-#setup_cron
+setup_cron
 
 # Set up forwarding emails into mailcatcher
 setup_mailcatcher
