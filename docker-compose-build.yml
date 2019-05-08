@@ -109,6 +109,7 @@ services:
     - USE_MAILCATCHER=true
     - SSMTP_SMTP_SERVER=mailcatcher:1025
     - SSMTP_REWRITE_DOMAIN=${M2SETUP_VIRTUAL_HOST}
+    - CRON_SCHEDULE=#
 
   cron:
     hostname: cron.${M2SETUP_PROJECT}
