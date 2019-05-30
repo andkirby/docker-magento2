@@ -74,12 +74,17 @@ export M2SETUP_PHP=${M2SETUP_PHP}
 
 # Generate environment variable for ports
 # for "Host > VM > Docker" communications within different projects
+# ssh port
 export M2SETUP_PORT_22=$(host_port ${M2SETUP_VIRTUAL_HOST} 22 "${DOCKER_FORWARDING_TYPE:-normal}")
+# http ports
 export M2SETUP_PORT_80=$(host_port ${M2SETUP_VIRTUAL_HOST} 80 "${DOCKER_FORWARDING_TYPE:-normal}")
 export M2SETUP_PORT_8080=$(host_port ${M2SETUP_VIRTUAL_HOST} 8080 "${DOCKER_FORWARDING_TYPE:-normal}")
 export M2SETUP_PORT_443=$(host_port ${M2SETUP_VIRTUAL_HOST} 443 "${DOCKER_FORWARDING_TYPE:-normal}")
+# mysql port
 export M2SETUP_PORT_3306=$(host_port ${M2SETUP_VIRTUAL_HOST} 3306 "${DOCKER_FORWARDING_TYPE:-normal}")
+# xdebug ports
 export M2SETUP_PORT_9000=$(host_port ${M2SETUP_VIRTUAL_HOST} 9000 "${DOCKER_FORWARDING_TYPE:-normal}")
+export M2SETUP_PORT_9001=$(host_port ${M2SETUP_VIRTUAL_HOST} 9001 "${DOCKER_FORWARDING_TYPE:-normal}")
 
 dev_file_option=''
 if [[ -f ${__dir}/../docker-compose.dev.yml ]]; then
