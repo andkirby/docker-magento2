@@ -13,5 +13,5 @@ readonly __dir __file
 
 docker-compose \
   --file ${__dir}/../docker-compose.yml ${dev_file_option} \
-  run --rm -e "TERM=xterm-256color" cli ${@:-bash}
+  run --service-ports --rm -e "TERM=xterm-256color" cli ${@:-bash}
 
