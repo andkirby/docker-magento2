@@ -33,6 +33,7 @@ if [[ ! -f "${MAGENTO_ROOT}/composer.json" ]]; then
         --repository-url=https://repo.magento.com/ \
         magento/project-${M2SETUP_PROJECT_TYPE:-community}-edition=${M2SETUP_VERSION} \
         --no-interaction \
+        ${COMPOSER_NO_DEV} \
         ${MAGENTO_ROOT}
 
     # Magento forces Composer to use ${MAGENTO_ROOT}/var/composer_home as the home directory
