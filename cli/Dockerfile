@@ -45,8 +45,10 @@ RUN apt-get update \
     zip \
     soap \
     bcmath \
-    mcrypt \
     opcache \
+
+  && pecl install mcrypt \
+  && docker-php-ext-enable mcrypt \
 
   && pecl install apcu \
   && docker-php-ext-enable apcu \
