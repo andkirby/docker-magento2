@@ -26,6 +26,8 @@ RUN apt-get update \
     git \
     unzip \
     nano \
+    # install SSH for Xdebug
+    ssh \
   && sh -c 'find /usr/share/nano/ -name *.nanorc | xargs -i echo "include {}"' > ~/.nanorc \
 
   # Configure the gd library
@@ -102,6 +104,8 @@ RUN true \
 
   && usermod -u ${DOCKER_UID} www-data \
   && groupmod -g ${DOCKER_GID} www-data \
+  # allow to login
+  && chsh -s /bin/bash www-data \
 
   && cp /container-files/etc/php-cli.ini    /usr/local/etc/php/conf.d/zz-magento.ini \
   && cp /container-files/etc/php-xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug-settings.ini \
@@ -145,6 +149,8 @@ ENV MAGENTO_ROOT /var/www/magento
 # ENV UPDATE_UID_GID false
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
+
+ENV HISTFILE=/var/www/magento/.bash_history
 
 ENV COMPOSER_ALLOW_SUPERUSER 0
 #ENV COMPOSER_GITHUB_TOKEN ""
