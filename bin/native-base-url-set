@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+set -o errexit
+set -o nounset
+#set -o xtrace
+
+# Set magic variables for current file & dir
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+__file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+readonly __dir __file
+
+docker_compose_file=--file=${__dir}/../docker-compose.yml
+docker_compose_service=varnish
+
+source ${__dir}/include.sh
+
+echo "Updating Magento URLs to ${M2SETUP_VIRTUAL_HOST}..."
+docker-compose ${docker_compose_file:-} run --rm cli \
+  magento config:set web/secure/base_url https://${M2SETUP_VIRTUAL_HOST}/ 2> /dev/null > /dev/null
+docker-compose ${docker_compose_file:-} run --rm cli \
+  magento config:set web/unsecure/base_url http://${M2SETUP_VIRTUAL_HOST}/ 2> /dev/null > /dev/null
+docker-compose ${docker_compose_file:-} run --rm cli \
+  magento cache:clean config 2> /dev/null > /dev/null
+docker-compose ${docker_compose_file:-} restart web fpm varnish 2> /dev/null > /dev/null
+echo "Magento configuration has been updated."
+
+# warm up cache
+curl -sLkI https://${M2SETUP_VIRTUAL_HOST}/ > /dev/null
+
+
+echo "Magento URL: https://${M2SETUP_VIRTUAL_HOST}/"
