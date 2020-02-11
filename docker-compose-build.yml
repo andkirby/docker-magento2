@@ -126,6 +126,10 @@ services:
     container_name: cron.${M2SETUP_PROJECT}
     build:
       context: cli/
+      args:
+        - M2SETUP_PHP=${M2SETUP_PHP}
+        - DOCKER_UID=1000
+        - DOCKER_GID=1000
     command: run-cron
     environment:
       - ENABLE_SENDMAIL=false
