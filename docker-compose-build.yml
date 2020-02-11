@@ -41,6 +41,10 @@ services:
     hostname: fpm.${M2SETUP_PROJECT}
     build:
       context: fpm/
+      args:
+      - M2SETUP_PHP=${M2SETUP_PHP}
+      - DOCKER_UID=1000
+      - DOCKER_GID=1000
     expose:
       - 9000
     ports:
@@ -78,6 +82,10 @@ services:
     container_name: cli.${M2SETUP_PROJECT}
     build:
       context: cli/
+      args:
+        - M2SETUP_PHP=${M2SETUP_PHP}
+        - DOCKER_UID=1000
+        - DOCKER_GID=1000
     links:
     - db
     ports:
