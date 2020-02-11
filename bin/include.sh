@@ -1,5 +1,5 @@
 ####################################################################
-############# Prepare env variables for ports forwarding ############
+############# Prepare env variables for ports forwarding ###########
 ####################################################################
 
 ##
@@ -52,7 +52,7 @@ host_port() {
 
     echo 127.$((0x${hash:0:2}))'.'$((0x${hash:2:2}))'.'$((0x${hash:4:2}))':'${target_port}
   else
-    echo "Uknown forward type ${forward_type}."
+    echo "Unknown forward type ${forward_type}."
   fi
 }
 
