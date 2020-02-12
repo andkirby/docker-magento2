@@ -8,9 +8,12 @@ FROM php:${M2SETUP_PHP}-cli
 
 MAINTAINER Nick Jones <nick@nicksays.co.uk>
 
-RUN apt-get update \
+RUN true \
+  # initiate /var/www
+  && mkdir -p /var/www/ && chown www-data:www-data /var/www/ \
 
   # Install dependencies
+  && apt-get update \
   && apt-get install -y \
     libfreetype6-dev \ 
     libicu-dev \ 

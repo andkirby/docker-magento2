@@ -11,6 +11,8 @@ MAINTAINER Nick Jones <nick@nicksays.co.uk>
 ADD . /container-files
 
 RUN true \
+  # initiate /var/www
+  && mkdir -p /var/www/ && chown www-data:www-data /var/www/ \
 
   # Install dependencies
   && apt-get update \
