@@ -59,8 +59,9 @@ services:
     environment:
     # Mailcatcher set up
     - USE_MAILCATCHER=true
-    - SSMTP_SMTP_SERVER=mailcatcher:1025
-    - SSMTP_REWRITE_DOMAIN=${M2SETUP_VIRTUAL_HOST}
+    - SMTP_HOST=mailcatcher
+    - SMTP_PORT=1025
+    - SMTP_REWRITE_DOMAIN=${M2SETUP_VIRTUAL_HOST}
 
   db:
     container_name: db.${M2SETUP_PROJECT}
@@ -117,8 +118,9 @@ services:
     - M2SETUP_PROJECT_TYPE=community
     # Mailcatcher set up
     - USE_MAILCATCHER=true
-    - SSMTP_SMTP_SERVER=mailcatcher:1025
-    - SSMTP_REWRITE_DOMAIN=${M2SETUP_VIRTUAL_HOST}
+    - SMTP_HOST=mailcatcher
+    - SMTP_PORT=1025
+    - SMTP_REWRITE_DOMAIN=${M2SETUP_VIRTUAL_HOST}
     - CRON_SCHEDULE=#
 
   cron:
@@ -135,8 +137,9 @@ services:
       - ENABLE_SENDMAIL=false
       # Mailcatcher set up
       - USE_MAILCATCHER=true
-      - SSMTP_SMTP_SERVER=mailcatcher:1025
-      - SSMTP_REWRITE_DOMAIN=${M2SETUP_VIRTUAL_HOST}
+      - SMTP_HOST=mailcatcher
+      - SMTP_PORT=1025
+      - SMTP_REWRITE_DOMAIN=${M2SETUP_VIRTUAL_HOST}
     volumes_from:
     - appdata
     links:

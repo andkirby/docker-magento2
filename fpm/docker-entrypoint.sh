@@ -50,16 +50,26 @@ chown www-data:www-data $MAGENTO_ROOT
 #
 # https://stackoverflow.com/a/28467090
 #
-if [ "${USE_MAILCATCHER:-}" == "true" ]; then
-  sed -ri "s/mailhub=.*/mailhub=${SSMTP_SMTP_SERVER:-mailcatcher:1025}/" /etc/ssmtp/ssmtp.conf
+if [[ "${USE_MAILCATCHER:-}" = 'true' ]]; then
+  cat << EOB  > /etc/msmtprc
+account default
+maildomain ${SMTP_REWRITE_DOMAIN}
+host ${SMTP_HOST:-mailcatcher}
+port ${SMTP_PORT:-1025}
+auth off
+from sandbox@${SMTP_REWRITE_DOMAIN}
+EOB
 
-  if [[ -n "${SSMTP_REWRITE_DOMAIN:-}" ]]; then
-    sed -ri "s/[#]?rewriteDomain=.*/rewriteDomain=${SSMTP_REWRITE_DOMAIN}/" /etc/ssmtp/ssmtp.conf
-    sed -ri "s/[#]?FromLineOverride=.*/FromLineOverride=YES/" /etc/ssmtp/ssmtp.conf
-  fi
 else
-  # enable using default 25 port
-  sed -ri "s/mailhub=.*/mailhub=/" /etc/ssmtp/ssmtp.conf
+  cat << EOB  > /etc/msmtprc
+account default
+host postfix
+maildomain ${SMTP_REWRITE_DOMAIN}
+auth off
+port 25
+from sandbox@${SMTP_REWRITE_DOMAIN}
+
+EOB
 fi
 
 # Substitute in php.ini values

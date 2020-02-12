@@ -92,17 +92,30 @@ setup_php_ini() {
 #
 # https://stackoverflow.com/a/28467090
 #
+# Example of fix for msmtp
+# https://git.zom.bi/dockerfiles/mailservice/commit/47243397e6ca377ed905752375f7681c979c4c51#f8c7be0fa4b837088487cec61861008d3305cd8a
+#
 setup_mailcatcher() {
   if [[ "${USE_MAILCATCHER:-}" = 'true' ]]; then
-    sed -ri "s/mailhub=.*/mailhub=${SSMTP_SMTP_SERVER:-mailcatcher:1025}/" /etc/ssmtp/ssmtp.conf
+    cat << EOB  > /etc/msmtprc
+account default
+maildomain ${SMTP_REWRITE_DOMAIN}
+host ${SMTP_HOST:-mailcatcher}
+port ${SMTP_PORT:-1025}
+auth off
+from sandbox@${SMTP_REWRITE_DOMAIN}
+EOB
 
-    if [[ -n "${SSMTP_REWRITE_DOMAIN:-}" ]]; then
-      sed -ri "s/[#]?rewriteDomain=.*/rewriteDomain=${SSMTP_REWRITE_DOMAIN}/" /etc/ssmtp/ssmtp.conf
-      sed -ri "s/[#]?FromLineOverride=.*/FromLineOverride=YES/" /etc/ssmtp/ssmtp.conf
-    fi
   else
-    # enable using default 25 port
-    sed -ri "s/mailhub=.*/mailhub=/" /etc/ssmtp/ssmtp.conf
+    cat << EOB  > /etc/msmtprc
+account default
+host postfix
+maildomain ${SMTP_REWRITE_DOMAIN}
+auth off
+port 25
+from sandbox@${SMTP_REWRITE_DOMAIN}
+
+EOB
   fi
 }
 
