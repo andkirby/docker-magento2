@@ -144,6 +144,8 @@ services:
     - appdata
     links:
     - db
+    env_file:
+    - ./cron.env
 
   mailcatcher:
     image: yappabe/mailhog

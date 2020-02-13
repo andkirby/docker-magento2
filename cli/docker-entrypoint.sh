@@ -50,20 +50,21 @@ files_init() {
 # Setup cron for magento
 #
 setup_cron() {
-  CRON_LOG=/var/log/cron.log
-
   # Setup Magento cron
   cat <<-SHELL > /etc/cron.d/magento
 # crontab -e
 SHELL=/bin/bash
 MAILTO=''
 
-${CRON_SCHEDULE:-'* * * * *'} www-data /usr/local/bin/php ${MAGENTO_ROOT}/bin/magento cron:run | grep -v \"Ran jobs by schedule\" >> ${MAGENTO_ROOT}/var/log/magento.cron.log
-${CRON_SCHEDULE:-'* * * * *'} www-data /usr/local/bin/php ${MAGENTO_ROOT}/update/cron.php >> ${MAGENTO_ROOT}/var/log/update.cron.log
-${CRON_SCHEDULE:-'* * * * *'} www-data /usr/local/bin/php ${MAGENTO_ROOT}/bin/magento setup:cron:run >> ${MAGENTO_ROOT}/var/log/setup.cron.log
+${CRON_SCHEDULE:-"* * * * *"} www-data /usr/local/bin/php ${MAGENTO_ROOT}/bin/magento cron:run | grep -v \"Ran jobs by schedule\" >> ${MAGENTO_ROOT}/var/log/magento.cron.log
+${CRON_SCHEDULE:-"* * * * *"} www-data /usr/local/bin/php ${MAGENTO_ROOT}/update/cron.php >> ${MAGENTO_ROOT}/var/log/update.cron.log
+${CRON_SCHEDULE:-"* * * * *"} www-data /usr/local/bin/php ${MAGENTO_ROOT}/bin/magento setup:cron:run >> ${MAGENTO_ROOT}/var/log/setup.cron.log
 SHELL
 
+  crontab /etc/cron.d/magento
+
   # Get rsyslog running for cron output
+  CRON_LOG=/var/log/cron.log
   touch ${CRON_LOG}
   echo "cron.* ${CRON_LOG}" > /etc/rsyslog.d/cron.conf
   service rsyslog start
