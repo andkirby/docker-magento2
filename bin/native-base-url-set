@@ -26,7 +26,7 @@ docker-compose ${docker_compose_file:-} restart web fpm varnish 2> /dev/null > /
 echo "Magento configuration has been updated."
 
 # warm up cache
-curl -sLkI https://${M2SETUP_VIRTUAL_HOST}/ > /dev/null
+#curl -sLkI https://${M2SETUP_VIRTUAL_HOST}/ > /dev/null
 
 
 echo "Magento URL: https://${M2SETUP_VIRTUAL_HOST}/"
