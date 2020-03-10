@@ -13,6 +13,11 @@ readonly __dir __file
 docker_compose_file=--file=${__dir}/../docker-compose.yml
 docker_compose_service=varnish
 
+# Set custom host
+if [[ -n "${1:-}" ]]; then
+    M2SETUP_VIRTUAL_HOST="${1}"
+fi
+
 source ${__dir}/include.sh
 
 echo "Updating Magento URLs to ${M2SETUP_VIRTUAL_HOST}..."
