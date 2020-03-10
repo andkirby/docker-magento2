@@ -22,7 +22,7 @@ ngrok_tunnel_host() {
 }
 
 app_current_url() {
-  docker-compose ${docker_compose_file:-} run --rm cli magento config:show web/secure/base_url  2> /dev/null | grep http | tr -d " \r"
+  docker-compose ${docker_compose_file:-} run --rm cli magento config:show web/secure/base_url  2> /dev/null | grep http | tr -d " \r" | tail -n1
 }
 
 app_host=$(docker-compose ${docker_compose_file:-} port ${docker_compose_service} 80)
@@ -52,7 +52,9 @@ fi
 echo "ngrok URL is ${ngrok_url}"
 
 # set new hostname in magento
-if [[ "$(app_current_url)" != "${ngrok_url}/" ]]; then
+if [[ "$(app_current_url)" == "${ngrok_url}/" ]]; then
+  echo "Magento web base URLs already updated."
+else
   echo "Updating Magento hostname..."
   docker-compose ${docker_compose_file:-} run --rm cli magento config:set web/secure/base_url ${ngrok_url}/ 2> /dev/null > /dev/null
   docker-compose ${docker_compose_file:-} run --rm cli magento config:set web/unsecure/base_url $(ngrok_tunnel_host ${app_host} http)/ 2> /dev/null > /dev/null
