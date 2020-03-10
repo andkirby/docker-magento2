@@ -132,6 +132,10 @@ RUN true \
     /usr/local/bin/composer-require \
     /usr/local/bin/composer-remove \
 
+  # Fix issue of rsyslog
+  # https://stackoverflow.com/a/60265997/213759
+  && sed -i '/imklog/s/^/#/' /etc/rsyslog.conf \
+
   # Install autocomplete
   && bash /container-files/etc/autocomplete-install.sh \
 
