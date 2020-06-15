@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -o pipefail
+set -o errexit
+set -o nounset
+#set -o xtrace
+
+[[ "${DEBUG:-}" = "true" ]] && set -o xtrace || true
+
+if [[ -n "${PAGEKITE_HOST:-}" ]] && [[ -n "${PAGEKITE_SECRET:-}" ]]; then
+  echo "Starting service with ENV parameters..."
+  pagekite.py --defaults \
+    --service_on=http:${PAGEKITE_HOST}:${M2SETUP_SERVICE_HOST:-web}:80:${PAGEKITE_SECRET} \
+    --service_on=https:${PAGEKITE_HOST}:${M2SETUP_SERVICE_HOST:-web}:443:${PAGEKITE_SECRET}
+elif [[ -n "$@" ]]; then
+  echo "Starting service with CMD args..."
+  pagekite.py $@
+fi

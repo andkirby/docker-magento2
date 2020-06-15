@@ -33,8 +33,20 @@ services:
     - VIRTUAL_HOST=${M2SETUP_PROJECT}
     - VIRTUAL_PORT=80
     - HTTPS_METHOD=redirect
-    expose:
-      - 80
+    - M2SETUP_SERVICE_HOST=web
+
+  pagekite:
+    container_name: pagekite.${M2SETUP_PROJECT}
+    build:
+      context: pagekite/
+    environment:
+      # same as M2SETUP_SERVICE_HOST
+      - PAGEKITE_LOCAL_HOST=web
+      - DEBUG=true
+    env_file:
+      - global.env
+    links:
+      - web
 
   fpm:
     container_name: fpm.${M2SETUP_PROJECT}
