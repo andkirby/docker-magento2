@@ -50,6 +50,10 @@ files_init() {
 # Setup cron for magento
 #
 setup_cron() {
+  if [[ -z "${CRON_SCHEDULE}" ]] || [[ '#' = "${CRON_SCHEDULE}" ]]; then
+    return
+  fi
+
   # Setup Magento cron
   cat <<-SHELL > /etc/cron.d/magento
 # crontab -e
