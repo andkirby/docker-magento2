@@ -18,23 +18,69 @@ import json
 import os
 import sys
 
-os.system("curl -sL http://localhost:4040/api/tunnels > /tmp/ngrok-tunnels.json")
 
+class WorkException(Exception):
+    code = 1
+
+    def __init__(self, message, code=1):
+        # Call the base class constructor with the parameters it needs
+        if message:
+            super(Exception, self).__init__(message)
+
+        self.code = code
+
+
+def read_tunnels():
+    os.system("curl -sL http://localhost:4040/api/tunnels > /tmp/ngrok-tunnels.json")
+    try:
+        with open('/tmp/ngrok-tunnels.json') as data_file:
+            if data_file != '':
+                stream = json.load(data_file)
+    except ValueError as e:
+        raise WorkException('Cannot read tunnels', code=4)
+
+    return stream
+
+
+def requested_host():
+    return str(sys.argv[1]) if len(sys.argv) > 1 else ''
+
+
+def find_hosts(data, app_host):
+    output = []
+    for i in data['tunnels']:
+        if app_host:
+            if str(app_host) in i['config']['addr']:
+                output.append(i['public_url'])
+        else:
+            output.append(i['public_url'] + " => " + i['config']['addr'])
+    return output
+
+
+# #################### Code #####################
+
+e = None
 try:
-  with open('/tmp/ngrok-tunnels.json') as data_file:
-    if data_file != '':
-      datajson = json.load(data_file)
-except ValueError:
-  sys.exit(8)
+    print("\n".join(
+        find_hosts(read_tunnels(), requested_host())
+    ))
 
+except WorkException as e:
+    pass
+except Exception as e:
+    try:
+        raise WorkException(str(e), code=3)
+    except WorkException as e:
+        pass
 
-app_host = ''
-if len(sys.argv) > 1:
-  app_host = str(sys.argv[1])
+finally:
+    if isinstance(e, Exception):
+        import traceback
 
-if datajson:
-  for i in datajson['tunnels']:
-    if app_host and str(app_host) in i['config']['addr']:
-      print(i['public_url'])
+        sys.stderr.write(
+            "Error: %s" % str(e)
+        )
+        sys.exit(e.code) if hasattr(e, 'code') else sys.exit(3)
     else:
-      print(i['public_url'] + " => " + i['config']['addr'])
+        # no errors
+        pass
