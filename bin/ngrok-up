@@ -11,59 +11,63 @@ __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
 readonly __dir __file
 
 docker_compose_file=--file=${__dir}/../docker-compose.yml
-docker_compose_service=varnish
 
 ##
-# E.g: ngrok_tunnel_host 0.0.0.0:1234 https
-ngrok_tunnel_host() {
-  local local_hostname=${1} \
-    type=${2:-https}
-  python ${__dir}/ngrok-tunnels.py ${local_hostname} | grep --color=never "${type}://" || true
+# Wake up ngrok for docker-compose service for a certain port
+#
+# Input params:
+# 1 - docker_service
+# 2 - docker_service_port
+# 2 - external_port
+#
+# Output: created ngrok host
+#
+ngrok_set() {
+  local service_host=${1}
+  # put created ngrok host into output
+  bash ${__dir}/ngrok-set.sh ${service_host}
 }
+
+service_host() {
+  local docker_service=${1} \
+        docker_service_port=${2}
+
+  docker-compose ${docker_compose_file:-} port \
+          ${docker_service} ${docker_service_port}
+
+}
+
+app_url=$(ngrok_set $(service_host varnish 80))
+mailcatcher_url=$(ngrok_set $(service_host mailcatcher 8025))
+echo
+
+echo "Magento URL is ${app_url}"
+echo "Mailcatcher URL is ${mailcatcher_url}"
+echo
 
 app_current_url() {
   docker-compose ${docker_compose_file:-} run --rm cli magento config:show web/secure/base_url  2> /dev/null | grep http | tr -d " \r" | tail -n1
 }
 
-app_host=$(docker-compose ${docker_compose_file:-} port ${docker_compose_service} 80)
-echo "Mapping ${app_host} in ngrok..."
+update_app_url() {
+  # set new hostname in magento
+  local new_app_url=${1}
 
-# fetch a given hostname
-ngrok_url=$(ngrok_tunnel_host ${app_host} || true)
+  if [[ "$(app_current_url)" == "${new_app_url}/" ]]; then
+    echo "Magento web base URLs already updated."
+  else
+    echo "Updating Magento hostname..."
+    docker-compose ${docker_compose_file:-} run --rm cli magento config:set web/secure/base_url ${new_app_url}/ 2> /dev/null > /dev/null
+    docker-compose ${docker_compose_file:-} run --rm cli magento config:set web/unsecure/base_url $(ngrok_tunnel_host ${new_app_url} http)/ 2> /dev/null > /dev/null
+    docker-compose ${docker_compose_file:-} run --rm cli magento cache:clean config 2> /dev/null > /dev/null
+    docker-compose ${docker_compose_file:-} restart web fpm varnish 2> /dev/null > /dev/null
+    echo "Magento configuration has been updated."
 
-# start new tunnel if it wasn't started
-if [[ -z "${ngrok_url}" ]]; then
-#  echo $(nohup ngrok http ${app_host} &) > /dev/null
-  bash ${__dir}/ngrok-run.sh ${app_host} > /dev/null || true
+    # warm up cache
+    curl -sLkI ${new_app_url} > /dev/null
+  fi
 
-  # sleep to allow nohup put its content to output
-  sleep 2
+  echo "Magento URL: ${new_app_url}"
+}
 
-  ngrok_url=$(ngrok_tunnel_host ${app_host})
-else
-  echo "ngrok tunnel already in progress for ${app_host}!"
-fi
-
-if [[ -z "${ngrok_url}" ]]; then
-  echo "error: Could not get ngrok tunnel URL." > /dev/stderr
-  exit 4
-fi
-
-echo "ngrok URL is ${ngrok_url}"
-
-# set new hostname in magento
-if [[ "$(app_current_url)" == "${ngrok_url}/" ]]; then
-  echo "Magento web base URLs already updated."
-else
-  echo "Updating Magento hostname..."
-  docker-compose ${docker_compose_file:-} run --rm cli magento config:set web/secure/base_url ${ngrok_url}/ 2> /dev/null > /dev/null
-  docker-compose ${docker_compose_file:-} run --rm cli magento config:set web/unsecure/base_url $(ngrok_tunnel_host ${app_host} http)/ 2> /dev/null > /dev/null
-  docker-compose ${docker_compose_file:-} run --rm cli magento cache:clean config 2> /dev/null > /dev/null
-  docker-compose ${docker_compose_file:-} restart web fpm varnish 2> /dev/null > /dev/null
-  echo "Magento configuration has been updated."
-
-  # warm up cache
-  curl -sLkI ${ngrok_url} > /dev/null
-fi
-
-echo "Magento URL: ${ngrok_url}"
+update_app_url ${app_url}
