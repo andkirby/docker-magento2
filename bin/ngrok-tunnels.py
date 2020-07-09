@@ -20,6 +20,10 @@ import sys
 
 
 class WorkException(Exception):
+    ERR_COMMON = 3
+    ERR_BAD_TUNNELS = 4
+    ERR_NO_HOST = 5
+
     code = 1
 
     def __init__(self, message, code=1):
@@ -37,23 +41,28 @@ def read_tunnels():
             if data_file != '':
                 stream = json.load(data_file)
     except ValueError as e:
-        raise WorkException('Cannot read tunnels', code=4)
+        raise WorkException('Cannot read tunnels', code=WorkException.ERR_BAD_TUNNELS)
 
     return stream
 
 
 def requested_host():
-    return str(sys.argv[1]) if len(sys.argv) > 1 else ''
+    return str(sys.argv[1]).replace('0.0.0.0', 'localhost') if len(sys.argv) > 1 else ''
 
 
-def find_hosts(data, app_host):
+def find_hosts(data, app_host, proto='https'):
     output = []
     for i in data['tunnels']:
         if app_host:
-            if str(app_host) in i['config']['addr']:
+
+            if str(app_host) in i['config']['addr'] and proto in i['public_url']:
                 output.append(i['public_url'])
         else:
             output.append(i['public_url'] + " => " + i['config']['addr'])
+
+    if app_host and not len(output):
+        raise WorkException("Host %s not found." % app_host, code=WorkException.ERR_NO_HOST)
+
     return output
 
 
@@ -69,7 +78,7 @@ except WorkException as e:
     pass
 except Exception as e:
     try:
-        raise WorkException(str(e), code=3)
+        raise WorkException(str(e), code=WorkException.ERR_COMMON)
     except WorkException as e:
         pass
 
@@ -80,7 +89,8 @@ finally:
         sys.stderr.write(
             "Error: %s" % str(e)
         )
-        sys.exit(e.code) if hasattr(e, 'code') else sys.exit(3)
+        sys.exit(e.code) if hasattr(e, 'code') else sys.exit(WorkException.ERR_COMMON)
     else:
+        # print(str(e))
         # no errors
         pass
