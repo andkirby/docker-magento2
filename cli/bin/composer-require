@@ -16,4 +16,5 @@ set -o nounset
 composer require --no-update ${@}
 
 # run update by package name only (a pkg name retrieved by the regular expression)
-composer update $(echo ${@} | grep -Eo '(([A-Za-z0-9_]|-)+/([A-Za-z0-9_]|-)+)') ${COMPOSER_NO_DEV:-'--no-dev'}
+composer update --with-dependencies \
+  $(echo ${@} | grep -Eo '(([A-Za-z0-9_]|-)+/([A-Za-z0-9_]|-)+)') ${COMPOSER_NO_DEV:-'--no-dev'}
