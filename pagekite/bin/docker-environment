@@ -9,9 +9,15 @@ set -o nounset
 
 if [[ -n "${PAGEKITE_HOST:-}" ]] && [[ -n "${PAGEKITE_SECRET:-}" ]]; then
   echo "Starting service with ENV parameters..."
+  if [[ -n "${M2SETUP_MAIL_HOST:-}" ]]; then
+    mail_service_opt="--service_on=http-8080:${PAGEKITE_HOST}:${M2SETUP_MAIL_HOST}:8025:${PAGEKITE_SECRET}"
+  fi
+
   pagekite.py --defaults \
-    --service_on=http:${PAGEKITE_HOST}:${M2SETUP_SERVICE_HOST:-web}:80:${PAGEKITE_SECRET} \
-    --service_on=https:${PAGEKITE_HOST}:${M2SETUP_SERVICE_HOST:-web}:443:${PAGEKITE_SECRET}
+    $([[ -n "${M2SETUP_MAIL_HOST:-}" ]] && \
+        echo "--service_on=http-8080:${PAGEKITE_HOST}:${M2SETUP_MAIL_HOST}:8025:${PAGEKITE_SECRET}") \
+    --service_on=http:${PAGEKITE_HOST}:${M2SETUP_WEB_HOST:-web}:80:${PAGEKITE_SECRET} \
+    --service_on=https:${PAGEKITE_HOST}:${M2SETUP_WEB_HOST:-web}:443:${PAGEKITE_SECRET}
 elif [[ -n "$@" ]]; then
   echo "Starting service with CMD args..."
   pagekite.py $@

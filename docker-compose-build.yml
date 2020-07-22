@@ -33,16 +33,17 @@ services:
     - VIRTUAL_HOST=${M2SETUP_PROJECT}
     - VIRTUAL_PORT=80
     - HTTPS_METHOD=redirect
-    - M2SETUP_SERVICE_HOST=web
+    - M2SETUP_WEB_HOST=web
 
   pagekite:
     container_name: pagekite.${M2SETUP_PROJECT}
     build:
       context: pagekite/
     environment:
-      # same as M2SETUP_SERVICE_HOST
+      # same as M2SETUP_WEB_HOST
       - PAGEKITE_LOCAL_HOST=web
-      - DEBUG=true
+      - M2SETUP_MAIL_HOST=mailcatcher
+#      - DEBUG=true
     env_file:
       - global.env
     links:

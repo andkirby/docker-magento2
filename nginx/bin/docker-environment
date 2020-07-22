@@ -19,7 +19,7 @@ if [ -n "${LETSENCRYPT_HOST:-}" ] && [ -n "${LETSENCRYPT_EMAIL:-}" ]; then
   echo "Setting up LetsEncrypt certificates..."
   # set pagekite server name
   sed -r -i.bak \
-    's|server_name (\w+);|server_name '${LETSENCRYPT_HOST}' '${M2SETUP_SERVICE_HOST:-web}' \1;|' \
+    's|server_name (\w+);|server_name '${LETSENCRYPT_HOST}' '${M2SETUP_WEB_HOST:-web}' \1;|' \
     /etc/nginx/conf.d/default.conf
 
   nginx -t
